@@ -1,0 +1,44 @@
+Image 1: ex4_1.png
+Bán kính: 1, số pixel trắng: 126
+Bán kính: 5, số pixel trắng: 47
+Bán kính: 10, số pixel trắng: 82
+Bán kính: 15, số pixel trắng: 92
+Bán kính: 20, số pixel trắng: 54
+Bán kính: 25, số pixel trắng: 51
+Bán kính: 30, số pixel trắng: 44
+Bán kính: 35, số pixel trắng: 5
+Bán kính: 40, số pixel trắng: 26
+
+Image 2: ex4_2.png
+Bán kính: 1, số pixel trắng: 1
+Bán kính: 5, số pixel trắng: 103
+Bán kính: 10, số pixel trắng: 89
+Bán kính: 15, số pixel trắng: 79
+Bán kính: 20, số pixel trắng: 67
+Bán kính: 25, số pixel trắng: 61
+Bán kính: 30, số pixel trắng: 32
+Bán kính: 35, số pixel trắng: 4
+Bán kính: 40, số pixel trắng: 0
+
+Image 3: ex4_3.png
+Bán kính: 1, số pixel trắng: 126
+Bán kính: 5, số pixel trắng: 98
+Bán kính: 10, số pixel trắng: 72
+Bán kính: 15, số pixel trắng: 65
+Bán kính: 20, số pixel trắng: 68
+Bán kính: 25, số pixel trắng: 54
+Bán kính: 30, số pixel trắng: 28
+Bán kính: 35, số pixel trắng: 9
+Bán kính: 40, số pixel trắng: 27
+
+Image 4: ex4_4.png
+Bán kính: 1, số pixel trắng: 0
+Bán kính: 5, số pixel trắng: 103
+Bán kính: 10, số pixel trắng: 93
+Bán kính: 15, số pixel trắng: 82
+Bán kính: 20, số pixel trắng: 68
+Bán kính: 25, số pixel trắng: 60
+Bán kính: 30, số pixel trắng: 33
+Bán kính: 35, số pixel trắng: 4
+Bán kính: 40, số pixel trắng: 0
+
