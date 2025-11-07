@@ -1,0 +1,44 @@
+\documentclass[12pt,a4paper]{report}
+\input{library}
+\addbibresource{references.bib} 
+% \addbibresource{references.bib} 
+
+%Header
+\fancyhead{} % clear all header fields
+\fancyhead[L]{
+    \begin{tabular}{rl}
+        \begin{picture}(15, 15)(0,0)
+            % \put(-15, -15){\includegraphics[width=17mm, height=12mm]{pictures/hcmut.png}}
+        \end{picture}&
+        \begin{tabular}{l}
+            \textbf{\bf \ttfamily Trường Đại Học Bách Khoa - ĐHQG TP.Hồ Chí Minh}\\
+            \textbf{\bf \ttfamily Khoa Cơ Khí}\\
+        \end{tabular} 	
+    \end{tabular}
+}
+\fancyhead[R]{
+	{\tiny \bf \quad} % Khoảng trắng nhỏ trong header bên phải
+}
+
+%Footer
+\fancyfoot{} % clear all footer fields
+\fancyfoot[L]{\scriptsize \ttfamily Đồ án chuyên ngành}
+\fancyfoot[R]{\scriptsize \ttfamily Trang {\thepage}/70}
+\renewcommand{\headrulewidth}{0.3pt}
+\renewcommand{\footrulewidth}{0.3pt}
+
+\begin{document}
+    \include{titlepage}
+    \tableofcontents  
+    \listoftables
+    \listoffigures
+    \newpage
+    \normalsize
+    \include{chapter1}
+    \include{chapter2} 
+    \include{chapter3} 
+    % \appendix
+    % \include{appendixA}
+    % \nocite{*}
+    % \printbibliography[title={TÀI LIỆU THAM KHẢO}, heading=bibintoc]
+\end{document}
