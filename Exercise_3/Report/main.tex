@@ -1,29 +1,23 @@
 \documentclass[12pt,a4paper]{report}
 \input{library}
 \addbibresource{references.bib} 
-% \addbibresource{references.bib} 
 
 %Header
 \fancyhead{} % clear all header fields
 \fancyhead[L]{
     \begin{tabular}{rl}
         \begin{picture}(15, 15)(0,0)
-            % \put(-15, -15){\includegraphics[width=17mm, height=12mm]{pictures/hcmut.png}}
+            \put(-15, -15){\includegraphics[width=15mm, height=12mm]{pictures/hcmut.png}}
         \end{picture}&
         \begin{tabular}{l}
-            \textbf{\bf \ttfamily Trường Đại Học Bách Khoa - ĐHQG TP.Hồ Chí Minh}\\
-            \textbf{\bf \ttfamily Khoa Cơ Khí}\\
+            \textbf{\bf \ttfamily Trường Đại Học Bách Khoa - ĐHQG TP.HCM}\\
+            \textbf{\bf \ttfamily Nhập môn Thị giác máy tính}\\
         \end{tabular} 	
     \end{tabular}
 }
-\fancyhead[R]{
-	{\tiny \bf \quad} % Khoảng trắng nhỏ trong header bên phải
-}
-
-%Footer
-\fancyfoot{} % clear all footer fields
-\fancyfoot[L]{\scriptsize \ttfamily Đồ án chuyên ngành}
-\fancyfoot[R]{\scriptsize \ttfamily Trang {\thepage}/70}
+\fancyhead[R]{CHƯƠNG \thechapter}
+% Footer
+\fancyfoot[C]{\thepage} % số trang giữa
 \renewcommand{\headrulewidth}{0.3pt}
 \renewcommand{\footrulewidth}{0.3pt}
 
