@@ -1,0 +1,80 @@
+\usepackage{vntex} % Tiếng Việt
+\usepackage{graphicx} % Chèn hình ảnh
+\usepackage{fancyhdr} % Gói hỗ trợ tạo header và footer fancy
+\usepackage{changepage} % Thay đổi lề
+
+% Chèn code
+\usepackage{listings} % Thêm gói listings để chèn code
+\usepackage{xcolor} % Màu cho code
+\lstset{
+    language=Matlab,
+    basicstyle=\footnotesize\ttfamily,
+    numbers=none,
+    numberstyle=\tiny\color{gray},
+    stepnumber=1,
+    numbersep=0.01pt,
+    tabsize=2,
+    breaklines=true,
+    breakatwhitespace=false,
+    xleftmargin=0cm, % for line numbers
+    framexleftmargin=0cm, % for code frame
+    keywordstyle=\color{blue},
+    commentstyle=\color{green},
+    stringstyle=\color{orange},
+    frame=single,
+    rulecolor=\color{black},
+    basicstyle=\ttfamily,
+}
+
+% Footnote and References
+\usepackage[style=numeric,backend=biber]{biblatex} % Sử dụng gói biblatex
+\usepackage{capt-of} %  Footnote trong caption
+\usepackage[perpage]{footmisc} % Đánh số lại chú thích mỗi trang
+
+% Thiết lập bảng
+\usepackage{array} % Gói hỗ trợ các bảng phức tạp
+\usepackage{tabularx}
+\usepackage{longtable} % Tạo bảng qua nhiều trang
+\usepackage{cellspace}
+\usepackage{diagbox} % Gói hỗ trợ tạo các ô chéo trong bảng
+\usepackage{multirow}
+\usepackage{makecell}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage[export]{adjustbox}
+
+% Thiết lập công thức toán học
+\usepackage{amsmath} % Gói hỗ trợ các công thức toán học
+\usepackage{amsfonts} % Gói hỗ trợ các ký hiệu toán học
+\usepackage{amssymb} % Gói hỗ trợ các ký hiệu toán học
+\usepackage{graphicx} % Gói hỗ trợ chèn hình ảnh
+\usepackage{bm} % Chữ in đậm trong công thức toán 
+
+% Đồ thị 
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+% Thiết lập thêm tùy chọn cho dấu gạch đầu dòng
+\usepackage{enumitem}
+
+% Thiết lập khác
+\usepackage{tikz}
+\usepackage{color}
+\usepackage{subcaption}
+\usepackage{framed}
+\usepackage{float} % Để chèn hình ảnh vào đúng vị trí
+\usepackage{fancyvrb} % Đưa dữ liệu dạng nguyên thủy vào
+
+% Thiết lập kích thước
+\usepackage{geometry}
+\geometry{
+    left=3cm,
+    right=2cm,
+    top=2.5cm,
+    bottom=2.5cm,
+}
+\usepackage{hyperref} %Chèn link
+\hypersetup{urlcolor=black,linkcolor=black,citecolor=black,colorlinks=true} % Màu cho các đường nét
+\everymath{\color{black}}
+\pagestyle{fancy}
+
