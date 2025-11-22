@@ -1,0 +1,38 @@
+\documentclass[12pt,a4paper]{report}
+\input{library}
+\addbibresource{references.bib} 
+
+%Header
+\fancyhead{} % clear all header fields
+\fancyhead[L]{
+    \begin{tabular}{rl}
+        \begin{picture}(15, 15)(0,0)
+            \put(-15, -15){\includegraphics[width=15mm, height=12mm]{pictures/hcmut.png}}
+        \end{picture}&
+        \begin{tabular}{l}
+            \textbf{\bf \ttfamily Trường Đại Học Bách Khoa - ĐHQG TP.HCM}\\
+            \textbf{\bf \ttfamily Nhập môn Thị giác máy tính}\\
+        \end{tabular} 	
+    \end{tabular}
+}
+\fancyhead[R]{CHƯƠNG \thechapter}
+% Footer
+\fancyfoot[C]{\thepage} % số trang giữa
+\renewcommand{\headrulewidth}{0.3pt}
+\renewcommand{\footrulewidth}{0.3pt}
+
+\begin{document}
+    \include{titlepage}
+    \tableofcontents  
+    \listoftables
+    \listoffigures
+    \newpage
+    \normalsize
+    \include{chapter5}
+    % \include{chapter2} 
+    % \include{chapter3} 
+    % \appendix
+    % \include{appendixA}
+    % \nocite{*}
+    % \printbibliography[title={TÀI LIỆU THAM KHẢO}, heading=bibintoc]
+\end{document}
