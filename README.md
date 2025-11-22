@@ -1,21 +1,21 @@
 # CODE
 - Exercise → Exercise_n → Question_n → Code + Video 
 # BÁO CÁO
-- Chapter → Section → Subsection → Subsubsection → Dot → '-' → '+'
+- Section → Subsection → Subsubsection → Dot → '-' → '+'
 
 ## Cấu trúc thư mục ảnh
 Tất cả ảnh đặt trong thư mục chính `pictures/`. Mỗi chương có một thư mục con chứa ảnh của chương đó.
 
 Cấu trúc:
 - pictures/
-  - chapter_1/
-  - chapter_2/
-  - chapter_3/
+  - section_1/
+  - section_2/
+  - section_3/
   - ...
 
 Quy ước đặt tên tệp ảnh:
 - Định dạng: cx_py_abc.ext
-  - c: ký tự 'c' (chỉ chapter)
+  - c: ký tự 'c' (chỉ section)
   - x: số chương (ví dụ 1, 2, 10)
   - _p: phân cách và chữ 'p' (picture)
   - y: số thứ tự ảnh trong chương (ví dụ 01, 02; khuyến khích 2 chữ số)
