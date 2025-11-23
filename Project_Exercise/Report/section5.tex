@@ -81,12 +81,12 @@
                \centering
                \begin{minipage}{0.48\textwidth}
                     \centering
-                    \includegraphics[width=0.7\textwidth]{pictures/section5/c5_p01_setup1.jpg}
+                    \includegraphics[width=0.7\textwidth]{pictures/section5/s5_p01_setup1.jpg}
                \end{minipage}
                \hfill
                \begin{minipage}{0.48\textwidth}
                     \centering
-                    \includegraphics[width=0.7\textwidth]{pictures/section5/c5_p01_setup2.jpg}
+                    \includegraphics[width=0.7\textwidth]{pictures/section5/s5_p02_setup2.jpg}
                \end{minipage}
                \caption{Mặt phẳng hệ tọa độ dùng để calib camera trực tiếp}
                \label{c5_pic01_setup}
@@ -95,11 +95,230 @@
                \item Bước 3: Dùng thước dây đo khoảng cách từ camera đến mặt phẳng hệ tọa độ để lấy giá trị $Z_i$ cho các điểm đã chấm. Với mỗi độ cao, các điểm đã chấm trên mặt phẳng sẽ có tọa độ trong không gian là $A_i = [X_i \quad Y_i \quad Z_i \quad 1]^T$.
                \begin{figure}[H]
                     \centering
-                    \includegraphics[width=0.5\textwidth]{pictures/section5/c5_p01_h467.jpg}
+                    \includegraphics[width=0.5\textwidth]{pictures/section5/s5_p03_h467.jpg}
                     \caption{Dùng thước dây đo độ cao từ camera đến mặt phẳng hệ tọa độ}
                     \label{c5_pic02_height}
                \end{figure}
                \item Bước 4: Chụp ảnh các điểm đã chấm từ camera, sử dụng code để lấy tọa độ ảnh $u_i, v_i$ tương ứng của các điểm này trên mặt phẳng ảnh.
           \end{itemize}
+          \hspace*{0.6cm}Vết hàm để thực hiện chấm các các điểm để lấy tọa độ pixel và xuất ra ma trận tọa độ trên không gian ảnh và không gian thực của từng điểm
+          \begin{lstlisting}[caption={Hàm đọc pixel từ điểm chấm}, label={lst:func_read_pixel}]
+               import cv2
+               import numpy as np
+
+               def create_calibration_data(image_path):
+               """
+               GUI creates calibration data by allowing the user to click on points in the image.
+               Returns a list of pixel coordinates.
+               """
+               # Load image
+               img = cv2.imread(image_path)
+               if img is None:
+                    print("Cannot load image.")
+                    return None
+
+               # List to store pixel coordinates
+               points = []
+
+               def mouse_callback(event, x, y, flags, param):
+                    if event == cv2.EVENT_LBUTTONDOWN:
+                         points.append((x, y))
+                         print(f"Clicked point: ({x}, {y})")
+                         cv2.circle(img, (x, y), 5, (0, 255, 0), -1)
+                         cv2.imshow('Image', img)
+
+               cv2.imshow('Image', img)
+               cv2.setMouseCallback('Image', mouse_callback)
+
+               print("Click points on the image. Press 'q' to stop.")
+               while True:
+                    key = cv2.waitKey(1) & 0xFF
+                    if key == ord('q'):
+                         break
+
+               cv2.destroyAllWindows()
+
+               if not points:
+                    print("No points were clicked.")
+                    return None
+
+               return points
+          \end{lstlisting}
+          \hspace*{0.6cm}Thứ tự đánh dấu các điểm trên giao diện GUI
+          \begin{figure}[H]
+               \centering
+               \includegraphics[width=1\textwidth]{pictures/section5/s5_p04_clickedpoint.jpg}
+               \caption{Thứ tự đánh dấu các điểm dùng để calib trên giao diện GUI}
+               \label{c5_pic04_clickedpoint}
+          \end{figure}
+          \hspace*{0.6cm}Mảng chứa dữ liệu tọa độ thực tế và tọa độ ảnh thu được sau khi chấm điểm
+          \begin{table}[H]
+               \centering
+               \caption{Bảng dữ liệu tọa độ các điểm dùng để calib}
+               \begin{tabular}{|c|c|c|c|c|}
+               \hline
+               $u_1$ & $v_1$ & $x_1$ & $y_1$ & $z_1$ \\
+               \hline
+               1199 & 553 & 80  & 30  & 492 \\
+               1057 & 462 & 50  & 50  & 492 \\
+               639  & 587 & -40 & 25  & 492 \\
+               552  & 796 & -60 & -20 & 492 \\
+               1064 & 880 & 50  & -40 & 492 \\
+               1208 & 552 & 80  & 30  & 475 \\
+               1061 & 459 & 50  & 50  & 475 \\
+               629  & 588 & -40 & 25  & 475 \\
+               540  & 804 & -60 & -20 & 475 \\
+               1068 & 888 & 50  & -40 & 475 \\
+               1212 & 554 & 80  & 30  & 467 \\
+               1063 & 458 & 50  & 50  & 467 \\
+               624  & 591 & -40 & 25  & 467 \\
+               533  & 811 & -60 & -20 & 467 \\
+               1070 & 897 & 50  & -40 & 467 \\
+               \hline
+               \end{tabular}
+               \label{tab:s5_calib_data}
+          \end{table}
+          \hspace*{0.6cm}Sau khi có dữ liệu tọa độ thực và tọa độ ảnh, tiến hành sử dụng SVD để giải hệ phương trình và tìm ma trận chiếu. Từ ma trận chiếu ta tách ra ma trận thông số nội và ngoại.
+          \begin{lstlisting}[caption={Code tìm các ma trận calib}, label={lst:func_cal_calib_matrix}]
+               # Get image coordinates and world coordinates
+               imgCoor = data[:, :2]  # columns u_1, v_1
+               worldCoor = data[:, 2:]  # columns x_1, y_1, z_1
+
+               # Build matrix P
+               P = np.zeros((2*len(imgCoor), 12))
+               j = 0
+
+               for i in range(0, 2*len(imgCoor), 2):
+                    P[i, 0:3] = worldCoor[j, 0:3]
+                    P[i+1, 4:7] = worldCoor[j, 0:3]
+                    P[i, 3] = 1
+                    P[i+1, 7] = 1
+                    P[i, 8:12] = -np.concatenate([worldCoor[j, 0:3], [1]]) * imgCoor[j, 0]
+                    P[i+1, 8:12] = -np.concatenate([worldCoor[j, 0:3], [1]]) * imgCoor[j, 1]
+                    j += 1
+
+               # SVD decomposition
+               U, S, V = np.linalg.svd(P)
+               V_last = V[-1, :]
+
+               # Create matrix M
+               M = np.zeros((3, 4))
+               M[0, 0:4] = V_last[0:4]
+               M[1, 0:4] = V_last[4:8]
+               M[2, 0:4] = V_last[8:12]
+
+               # Extract intrinsic and extrinsic matrices from matrix M
+               M = M / M[2, 3]
+               H = M[:, 0:3]  # first 3 columns of M
+               T = M[:, 3]    # translation matrix
+
+               # QR decomposition to find K and Ro
+               Q, R = np.linalg.qr(np.linalg.inv(H))
+               K = np.linalg.inv(R)
+               Ro = Q.T
+
+               # K must have positive diagonal elements
+               t = np.array([[-1, 0, 0],
+                         [0, 1, 0],
+                         [0, 0, 1]])
+               K = K @ t / K[2, 2]
+          \end{lstlisting}
+          \hspace*{0.6cm}Kết quả ma trận hình chiếu, ma trận thông số nội và ngoại thu được
+          \begin{figure}[H]
+               \centering
+               \includegraphics[width=1\textwidth]{pictures/section5/s5_p07_result_matrix.jpg}
+               \caption{Kết quả ma trận calib thu được từ phương pháp trực tiếp}
+               \label{c5_pic07_calib_result}
+          \end{figure}
+          \hspace*{0.6cm}Thực hiện kiểm tra lại kết quả ma trận calib thu được bằng cách tính toán lại tọa độ thực tế của các điểm checkpoint từ tọa độ pixel. Công thức liên hệ giữa tọa độ thực $M_w$ và tọa độ ảnh pixel $m_p$ là 
+          \begin{equation}
+               M_w = R^{-1}(K^{-1} z m_p - T)
+          \end{equation}
+          \begin{lstlisting}[caption={Kiểm tra kết quả các ma trận calib}, label={lst:func_cal_calib_matrix}]
+               # Calculate world coordinates from image coordinates
+               z_known = 492  # distance from camera to surface
+
+               image_path_test = r"D:\Fundemental\4\251\Computer_Vision\BTL\pics\b5_new\492.jpg"
+
+               worldCoor_3D = []
+               # imgCoor_test = np.array([[845, 507], [1462, 100], [1750, 412]])
+               imgCoor_test = create_calibration_data(image_path_test)
+               imgCoor_test = np.array(imgCoor_test)
+               point_names = ['P1', 'P2', 'P3']
+
+               for i in range(len(imgCoor_test)):
+               u = imgCoor_test[i, 0]
+               v = imgCoor_test[i, 1]
+               
+               # Define the system of equations
+               A = np.array([
+                    [M[0,0] - u*M[2,0], M[0,1] - u*M[2,1]],
+                    [M[1,0] - v*M[2,0], M[1,1] - v*M[2,1]]
+               ])
+               
+               B = np.array([
+                    u*M[2,2]*z_known + u*M[2,3] - M[0,2]*z_known - M[0,3],
+                    v*M[2,2]*z_known + v*M[2,3] - M[1,2]*z_known - M[1,3]
+               ])
+               
+               # Solve for world coordinates (X, Y)
+               world_pt = np.linalg.solve(A, B)
+               worldCoor_3D.append([np.ceil(world_pt[0]), np.ceil(world_pt[1]), z_known])
+               
+               worldCoor_3D = np.array(worldCoor_3D)
+
+               # Calculate Euclidean distance between P1 and P2
+               p1 = worldCoor_3D[0]
+               p2 = worldCoor_3D[1]
+
+               distance = np.sqrt((p2[0] - p1[0])**2 + (p2[1] - p1[1])**2 + (p2[2] - p1[2])**2)
+          \end{lstlisting}
+          \hspace*{0.6cm}Các điểm dùng để kiểm tra lại kết quả sau khi tính toán ma trận calib ở độ cao $h = 492mm$
+          \begin{figure}[H]
+               \centering
+               \includegraphics[width=1\textwidth]{pictures/section5/s5_p05_checkedpoint.jpg}
+               \caption{Các điểm dùng để kiểm tra lại, độ cao h = 492mm}
+               \label{c5_pic05_checkedpoint}
+          \end{figure}
+          \hspace*{0.6cm}Kết quả
+          \begin{figure}[H]
+               \centering
+               \includegraphics[width=1\textwidth]{pictures/section5/s5_p08_check_result.jpg}
+               \caption{Kết quả tọa độ các điểm trong không gian thực}
+               \label{c5_pic09_check_result}
+          \end{figure}
+          So với tọa độ 3 điểm $P_1, P_2, P_3$ lần lượt là $(100, 50, 492)$, $(175, 55, 492)$ và $(115, 115, 492)$. Kết quả tọa độ tính toán lại từ các ma trận calib theo phương pháp trực tiếp là khá chính xác.\\
+          \hspace*{0.6cm}Khoảng cách tính toán giữa hai điểm $P_1$ và $P_2$ là 72.111026 mm, so với khoảng cách thực tế là 75 mm, kết quả thu được là khá chính xác.
+          \begin{figure}[H]
+               \centering
+               \includegraphics[width=1\textwidth]{pictures/section5/s5_p09_length.jpg}
+               \caption{Kết quả khoảng cách giữa hai điểm P1 và P2}
+               \label{c5_pic10_length}
+          \end{figure}
+          \hspace*{0.6cm}\textbf{So sánh và nhận xét:} So với ma trận thông số nội $K$ thu được từ phương pháp calib gián tiếp, có sự sai khác giữa các hệ số $f_x, f_y, c_x, c_y$. Nguyên nhân có thể đến từ cách lấy các điểm dữ liệu khác nhau và nhiễu trong quá trình lấy mẫu.
+          Calib gián tiếp sử dụng checkerboard với nhiều điểm ảnh, nhiều góc độ hơn, và có tính đến distortion, ngược lại phương pháp calib camera trực tiếp lại giả định bỏ qua các yếu tố distortion và số điểm ảnh mà nhóm lấy mẫu để tính toán cũng ít hơn. \\
+          \hspace*{0.6cm}Hình ảnh độ cao từ camera đến mặt phẳng ở 3 độ cao
+          \begin{figure}[H]
+               \centering
+               \begin{minipage}{0.48\textwidth}
+                    \centering
+                    \includegraphics[width=0.7\textwidth]{pictures/section5/s5_p11_h467.jpg}
+                    \caption{Độ cao h1 = 467 mm}
+               \end{minipage}
+               \hfill
+               \begin{minipage}{0.48\textwidth}
+                    \centering
+                    \includegraphics[width=0.7\textwidth]{pictures/section5/s5_p12_h475.jpg}
+                    \caption{Độ cao h2 = 475 mm}
+               \end{minipage}
+               \label{c5_pic11_12_height}
+          \end{figure}  
+          \begin{figure}[H]
+               \centering
+               \includegraphics[width=0.4\textwidth]{pictures/section5/s5_p13_h492.jpg}
+               \caption{Độ cao h3 = 492 mm}
+               \label{c5_pic13_height}
+          \end{figure}
+          
 
 
