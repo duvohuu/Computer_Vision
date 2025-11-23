@@ -295,8 +295,30 @@
                \caption{Kết quả khoảng cách giữa hai điểm P1 và P2}
                \label{c5_pic10_length}
           \end{figure}
-          \hspace*{0.6cm}\textbf{So sánh và nhận xét:} So với ma trận thông số nội $K$ thu được từ phương pháp calib gián tiếp \
-          
+          \hspace*{0.6cm}\textbf{So sánh và nhận xét:} So với ma trận thông số nội $K$ thu được từ phương pháp calib gián tiếp, có sự sai khác giữa các hệ số $f_x, f_y, c_x, c_y$. Nguyên nhân có thể đến từ cách lấy các điểm dữ liệu khác nhau và nhiễu trong quá trình lấy mẫu.
+          Calib gián tiếp sử dụng checkerboard với nhiều điểm ảnh, nhiều góc độ hơn, và có tính đến distortion, ngược lại phương pháp calib camera trực tiếp lại giả định bỏ qua các yếu tố distortion và số điểm ảnh mà nhóm lấy mẫu để tính toán cũng ít hơn. \\
+          \hspace*{0.6cm}Hình ảnh độ cao từ camera đến mặt phẳng ở 3 độ cao
+          \begin{figure}[H]
+               \centering
+               \begin{minipage}{0.48\textwidth}
+                    \centering
+                    \includegraphics[width=0.7\textwidth]{pictures/section5/s5_p11_h467.jpg}
+                    \caption{Độ cao h1 = 467 mm}
+               \end{minipage}
+               \hfill
+               \begin{minipage}{0.48\textwidth}
+                    \centering
+                    \includegraphics[width=0.7\textwidth]{pictures/section5/s5_p12_h475.jpg}
+                    \caption{Độ cao h2 = 475 mm}
+               \end{minipage}
+               \label{c5_pic11_12_height}
+          \end{figure}  
+          \begin{figure}[H]
+               \centering
+               \includegraphics[width=0.4\textwidth]{pictures/section5/s5_p13_h492.jpg}
+               \caption{Độ cao h3 = 492 mm}
+               \label{c5_pic13_height}
+          \end{figure}
           
 
 
