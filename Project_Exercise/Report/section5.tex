@@ -1,5 +1,5 @@
 \section{Câu 5}
-     Thực hiện calib camera bằng phương pháp trực tiếp sau đó tìm lại ma trận thông số nội và ngoại, so sánh với phương pháp gián tiếp đã làm ở câu 3.
+     \hspace*{0.6cm}Thực hiện calib camera bằng phương pháp trực tiếp sau đó tìm lại ma trận thông số nội và ngoại, so sánh với phương pháp gián tiếp đã làm ở câu 3.
      \subsection{Cơ sở lý thuyết}
           \hspace*{0.6cm}Quá trình hiệu chỉnh camera bằng phương pháp trực tiếp là đi tìm các thông số trong ma trận chiếu (projection matrix), khi ta đã
           biết tọa độ các điểm $A_1, A_2, \dots, A_n$ trong hệ tọa độ vật và tọa độ tương ứng $a_1, a_2, \dots, a_n$ của chúng trên mặt phẳng ảnh.\\ % tài liệu tham khảo sách thầy Hạnh
@@ -74,7 +74,7 @@
           \end{equation}
           \hspace*{0.6cm}Giải hệ này tìm ra các hệ số của ma trận hình chiếu sử dụng phương pháp SVD (Singular Value Decomposition). Rồi từ đó phân tách ra thành ma trận thông số nội $K$, ma trận xoay $R$ và vector tịnh tiến $T$.
      \subsection{Các bước thực hiện}
-          Quá trình thực hiện bao gồm các bước sau:
+          \hspace*{0.6cm}Quá trình thực hiện bao gồm các bước sau:
           \begin{itemize}
                \item Bước 1: Sử dụng một mặt phẳng chứa một hệ tọa độ xác định như hình, chiều dài mỗi ô trên hệ tọa độ là 5mm.
                \begin{figure}[h]
@@ -103,46 +103,46 @@
           \end{itemize}
           \hspace*{0.6cm}Vết hàm để thực hiện chấm các các điểm để lấy tọa độ pixel và xuất ra ma trận tọa độ trên không gian ảnh và không gian thực của từng điểm
           \begin{lstlisting}[caption={Hàm đọc pixel từ điểm chấm}, label={lst:func_read_pixel}]
-               import cv2
-               import numpy as np
+import cv2
+import numpy as np
 
-               def create_calibration_data(image_path):
-               """
-               GUI creates calibration data by allowing the user to click on points in the image.
-               Returns a list of pixel coordinates.
-               """
-               # Load image
-               img = cv2.imread(image_path)
-               if img is None:
-                    print("Cannot load image.")
-                    return None
+def create_calibration_data(image_path):
+"""
+GUI creates calibration data by allowing the user to click on points in the image.
+Returns a list of pixel coordinates.
+"""
+# Load image
+img = cv2.imread(image_path)
+if img is None:
+     print("Cannot load image.")
+     return None
 
-               # List to store pixel coordinates
-               points = []
+# List to store pixel coordinates
+points = []
 
-               def mouse_callback(event, x, y, flags, param):
-                    if event == cv2.EVENT_LBUTTONDOWN:
-                         points.append((x, y))
-                         print(f"Clicked point: ({x}, {y})")
-                         cv2.circle(img, (x, y), 5, (0, 255, 0), -1)
-                         cv2.imshow('Image', img)
+def mouse_callback(event, x, y, flags, param):
+     if event == cv2.EVENT_LBUTTONDOWN:
+          points.append((x, y))
+          print(f"Clicked point: ({x}, {y})")
+          cv2.circle(img, (x, y), 5, (0, 255, 0), -1)
+          cv2.imshow('Image', img)
 
-               cv2.imshow('Image', img)
-               cv2.setMouseCallback('Image', mouse_callback)
+cv2.imshow('Image', img)
+cv2.setMouseCallback('Image', mouse_callback)
 
-               print("Click points on the image. Press 'q' to stop.")
-               while True:
-                    key = cv2.waitKey(1) & 0xFF
-                    if key == ord('q'):
-                         break
+print("Click points on the image. Press 'q' to stop.")
+while True:
+     key = cv2.waitKey(1) & 0xFF
+     if key == ord('q'):
+          break
 
-               cv2.destroyAllWindows()
+cv2.destroyAllWindows()
 
-               if not points:
-                    print("No points were clicked.")
-                    return None
+if not points:
+     print("No points were clicked.")
+     return None
 
-               return points
+return points
           \end{lstlisting}
           \hspace*{0.6cm}Thứ tự đánh dấu các điểm trên giao diện GUI
           \begin{figure}[H]
@@ -178,50 +178,50 @@
                \end{tabular}
                \label{tab:s5_calib_data}
           \end{table}
-          \hspace*{0.6cm}Sau khi có dữ liệu tọa độ thực và tọa độ ảnh, tiến hành sử dụng SVD để giải hệ phương trình và tìm ma trận chiếu. Từ ma trận chiếu ta tách ra ma trận thông số nội và ngoại.
+          Sau khi có dữ liệu tọa độ thực và tọa độ ảnh, tiến hành sử dụng SVD để giải hệ phương trình và tìm ma trận chiếu. Từ ma trận chiếu ta tách ra ma trận thông số nội và ngoại.
           \begin{lstlisting}[caption={Code tìm các ma trận calib}, label={lst:func_cal_calib_matrix}]
-               # Get image coordinates and world coordinates
-               imgCoor = data[:, :2]  # columns u_1, v_1
-               worldCoor = data[:, 2:]  # columns x_1, y_1, z_1
+# Get image coordinates and world coordinates
+imgCoor = data[:, :2]  # columns u_1, v_1
+worldCoor = data[:, 2:]  # columns x_1, y_1, z_1
 
-               # Build matrix P
-               P = np.zeros((2*len(imgCoor), 12))
-               j = 0
+# Build matrix P
+P = np.zeros((2*len(imgCoor), 12))
+j = 0
 
-               for i in range(0, 2*len(imgCoor), 2):
-                    P[i, 0:3] = worldCoor[j, 0:3]
-                    P[i+1, 4:7] = worldCoor[j, 0:3]
-                    P[i, 3] = 1
-                    P[i+1, 7] = 1
-                    P[i, 8:12] = -np.concatenate([worldCoor[j, 0:3], [1]]) * imgCoor[j, 0]
-                    P[i+1, 8:12] = -np.concatenate([worldCoor[j, 0:3], [1]]) * imgCoor[j, 1]
-                    j += 1
+for i in range(0, 2*len(imgCoor), 2):
+     P[i, 0:3] = worldCoor[j, 0:3]
+     P[i+1, 4:7] = worldCoor[j, 0:3]
+     P[i, 3] = 1
+     P[i+1, 7] = 1
+     P[i, 8:12] = -np.concatenate([worldCoor[j, 0:3], [1]]) * imgCoor[j, 0]
+     P[i+1, 8:12] = -np.concatenate([worldCoor[j, 0:3], [1]]) * imgCoor[j, 1]
+     j += 1
 
-               # SVD decomposition
-               U, S, V = np.linalg.svd(P)
-               V_last = V[-1, :]
+# SVD decomposition
+U, S, V = np.linalg.svd(P)
+V_last = V[-1, :]
 
-               # Create matrix M
-               M = np.zeros((3, 4))
-               M[0, 0:4] = V_last[0:4]
-               M[1, 0:4] = V_last[4:8]
-               M[2, 0:4] = V_last[8:12]
+# Create matrix M
+M = np.zeros((3, 4))
+M[0, 0:4] = V_last[0:4]
+M[1, 0:4] = V_last[4:8]
+M[2, 0:4] = V_last[8:12]
 
-               # Extract intrinsic and extrinsic matrices from matrix M
-               M = M / M[2, 3]
-               H = M[:, 0:3]  # first 3 columns of M
-               T = M[:, 3]    # translation matrix
+# Extract intrinsic and extrinsic matrices from matrix M
+M = M / M[2, 3]
+H = M[:, 0:3]  # first 3 columns of M
+T = M[:, 3]    # translation matrix
 
-               # QR decomposition to find K and Ro
-               Q, R = np.linalg.qr(np.linalg.inv(H))
-               K = np.linalg.inv(R)
-               Ro = Q.T
+# QR decomposition to find K and Ro
+Q, R = np.linalg.qr(np.linalg.inv(H))
+K = np.linalg.inv(R)
+Ro = Q.T
 
-               # K must have positive diagonal elements
-               t = np.array([[-1, 0, 0],
-                         [0, 1, 0],
-                         [0, 0, 1]])
-               K = K @ t / K[2, 2]
+# K must have positive diagonal elements
+t = np.array([[-1, 0, 0],
+          [0, 1, 0],
+          [0, 0, 1]])
+K = K @ t / K[2, 2]
           \end{lstlisting}
           \hspace*{0.6cm}Kết quả ma trận hình chiếu, ma trận thông số nội và ngoại thu được
           \begin{figure}[H]
@@ -235,43 +235,43 @@
                M_w = R^{-1}(K^{-1} z m_p - T)
           \end{equation}
           \begin{lstlisting}[caption={Kiểm tra kết quả các ma trận calib}, label={lst:func_cal_calib_matrix}]
-               # Calculate world coordinates from image coordinates
-               z_known = 492  # distance from camera to surface
+# Calculate world coordinates from image coordinates
+z_known = 492  # distance from camera to surface
 
-               image_path_test = r"D:\Fundemental\4\251\Computer_Vision\BTL\pics\b5_new\492.jpg"
+image_path_test = r"D:\Fundemental\4\251\Computer_Vision\BTL\pics\b5_new\492.jpg"
 
-               worldCoor_3D = []
-               # imgCoor_test = np.array([[845, 507], [1462, 100], [1750, 412]])
-               imgCoor_test = create_calibration_data(image_path_test)
-               imgCoor_test = np.array(imgCoor_test)
-               point_names = ['P1', 'P2', 'P3']
+worldCoor_3D = []
+# imgCoor_test = np.array([[845, 507], [1462, 100], [1750, 412]])
+imgCoor_test = create_calibration_data(image_path_test)
+imgCoor_test = np.array(imgCoor_test)
+point_names = ['P1', 'P2', 'P3']
 
-               for i in range(len(imgCoor_test)):
-               u = imgCoor_test[i, 0]
-               v = imgCoor_test[i, 1]
-               
-               # Define the system of equations
-               A = np.array([
-                    [M[0,0] - u*M[2,0], M[0,1] - u*M[2,1]],
-                    [M[1,0] - v*M[2,0], M[1,1] - v*M[2,1]]
-               ])
-               
-               B = np.array([
-                    u*M[2,2]*z_known + u*M[2,3] - M[0,2]*z_known - M[0,3],
-                    v*M[2,2]*z_known + v*M[2,3] - M[1,2]*z_known - M[1,3]
-               ])
-               
-               # Solve for world coordinates (X, Y)
-               world_pt = np.linalg.solve(A, B)
-               worldCoor_3D.append([np.ceil(world_pt[0]), np.ceil(world_pt[1]), z_known])
-               
-               worldCoor_3D = np.array(worldCoor_3D)
+for i in range(len(imgCoor_test)):
+u = imgCoor_test[i, 0]
+v = imgCoor_test[i, 1]
 
-               # Calculate Euclidean distance between P1 and P2
-               p1 = worldCoor_3D[0]
-               p2 = worldCoor_3D[1]
+# Define the system of equations
+A = np.array([
+     [M[0,0] - u*M[2,0], M[0,1] - u*M[2,1]],
+     [M[1,0] - v*M[2,0], M[1,1] - v*M[2,1]]
+])
 
-               distance = np.sqrt((p2[0] - p1[0])**2 + (p2[1] - p1[1])**2 + (p2[2] - p1[2])**2)
+B = np.array([
+     u*M[2,2]*z_known + u*M[2,3] - M[0,2]*z_known - M[0,3],
+     v*M[2,2]*z_known + v*M[2,3] - M[1,2]*z_known - M[1,3]
+])
+
+# Solve for world coordinates (X, Y)
+world_pt = np.linalg.solve(A, B)
+worldCoor_3D.append([np.ceil(world_pt[0]), np.ceil(world_pt[1]), z_known])
+
+worldCoor_3D = np.array(worldCoor_3D)
+
+# Calculate Euclidean distance between P1 and P2
+p1 = worldCoor_3D[0]
+p2 = worldCoor_3D[1]
+
+distance = np.sqrt((p2[0] - p1[0])**2 + (p2[1] - p1[1])**2 + (p2[2] - p1[2])**2)
           \end{lstlisting}
           \hspace*{0.6cm}Các điểm dùng để kiểm tra lại kết quả sau khi tính toán ma trận calib ở độ cao $h = 492mm$
           \begin{figure}[H]
@@ -280,7 +280,8 @@
                \caption{Các điểm dùng để kiểm tra lại, độ cao h = 492mm}
                \label{c5_pic05_checkedpoint}
           \end{figure}
-          \hspace*{0.6cm}Kết quả
+          \newpage
+          \hspace*{0.6cm}Kết quả:
           \begin{figure}[H]
                \centering
                \includegraphics[width=1\textwidth]{pictures/section5/s5_p08_check_result.jpg}
@@ -295,7 +296,7 @@
                \caption{Kết quả khoảng cách giữa hai điểm P1 và P2}
                \label{c5_pic10_length}
           \end{figure}
-          \hspace*{0.6cm}\textbf{So sánh và nhận xét:} So với ma trận thông số nội $K$ thu được từ phương pháp calib gián tiếp, có sự sai khác giữa các hệ số $f_x, f_y, c_x, c_y$. Nguyên nhân có thể đến từ cách lấy các điểm dữ liệu khác nhau và nhiễu trong quá trình lấy mẫu.
+          \textbf{So sánh và nhận xét:} So với ma trận thông số nội $K$ thu được từ phương pháp calib gián tiếp, có sự sai khác giữa các hệ số $f_x, f_y, c_x, c_y$. Nguyên nhân có thể đến từ cách lấy các điểm dữ liệu khác nhau và nhiễu trong quá trình lấy mẫu.
           Calib gián tiếp sử dụng checkerboard với nhiều điểm ảnh, nhiều góc độ hơn, và có tính đến distortion, ngược lại phương pháp calib camera trực tiếp lại giả định bỏ qua các yếu tố distortion và số điểm ảnh mà nhóm lấy mẫu để tính toán cũng ít hơn. \\
           \hspace*{0.6cm}Hình ảnh độ cao từ camera đến mặt phẳng ở 3 độ cao
           \begin{figure}[H]
