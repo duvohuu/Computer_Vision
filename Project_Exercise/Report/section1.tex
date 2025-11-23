@@ -1,0 +1,94 @@
+\section{Tính toán chọn vùng làm việc cho camera so sánh với thực tế và tính toán}
+\subsection{Xác định các thông số sử dụng cho tính toán}
+Vì camera nhìn từ trên xuống nên FOV tối thiểu thực tế = chiều dài tối thiểu x chiều rộng tối thiểu = 268mm x 164mm. \\
+\textbf{Lựa chọn camera: } \\
+Nhóm sử dụng camera Basler a2A1920-51gcBAS với các thông số cần sử dụng:
+\begin{itemize}
+    \item Resolution: 1920x1200 pixels
+    \item Sensor size: 6.6mm x 4.1mm
+    \item Focal Length: 8mm
+\end{itemize}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{pictures/section1/s1_p01.png}
+    \caption{Thông số camera Basler a2A1920-51gcBAS}
+    \label{fig:camera_basler}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.45\textwidth]{pictures/section1/s1_p02.png}
+    \caption{Hình ảnh thực tế của camera Basler a2A1920-51gcBAS}
+    \label{fig:camera_basler}
+\end{figure}
+
+\textbf{Nhóm tiến hành chọn trước Working Distance: 445 mm}  
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{pictures/section1/s1_p03.png}
+    \caption{Working Distance thực tế}
+    \label{fig:working_distance}
+\end{figure}
+
+\textbf{Tính vùng quan sát, làm việc của camera với Working Distance đã chọn:} \\
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{pictures/section1/s1_p04.png}
+    \caption{Mô tả cách thức suy ra công thức tính toán}
+    \label{fig:working_distance}
+\end{figure}
+Theo tỷ lệ đồng dạng tam giác ở hình 4 ta có công thức như sau:
+\begin{equation}
+    \frac{FOV}{Working\ Distance} = \frac{Sensor\ Size}{Focal\ Length}
+\end{equation}
+
+Suy ra:
+\begin{equation}
+    FOV = \frac{Sensor\ Size \times Working\ Distance}{Focal\ Length}
+\end{equation}
+
+\subsection{Tính toán theo lý thuyết}
+Với Working Distance = 445mm, Focal Length = 8mm, ta tính được:
+
+\textbf{FOV theo chiều ngang:}
+\begin{equation}
+    FOV_h = \frac{6.6 \times 445}{8} = 367.125mm
+\end{equation}
+
+\textbf{FOV theo chiều dọc:}
+\begin{equation}
+    FOV_v = \frac{4.1 \times 445}{8} = 228.0625mm
+\end{equation}
+
+\subsection{So sánh với yêu cầu thực tế}
+\begin{itemize}
+    \item FOV tính toán được: 367.125mm x 228.0625mm
+    \item FOV tối thiểu yêu cầu: 268mm x 164mm
+\end{itemize}
+\textbf{Kết luận:} FOV tính toán lớn hơn FOV tối thiểu yêu cầu, đảm bảo camera có thể quan sát toàn bộ vùng làm việc cần thiết.
+\cleardoublepage
+\subsection{Tính sai số của đường chéo FOV}
+\begin{itemize}
+    \item Đường chéo theo lý thuyết tính từ kích thước FOV ở trên:
+    \begin{equation}
+        \sqrt{367.125^2 + 228.0625^2} = 432.196mm
+    \end{equation}
+    \item Đường chéo FOV đo được thực tế:
+    \begin{equation}
+        \sqrt{367.125^2 + 228.0625^2} = 432.196mm
+    \end{equation}
+    \item Sai số đường chéo FOV:
+    \begin{equation}
+        \frac{|432.196 - 430|}{432.196} \times 100\% = 0.51\%
+    \end{equation}
+\end{itemize}
+
+\subsection{Kiểm tra lại bằng công cụ Len Selector của nhà sản xuất}
+Để kiểm tra lại kết quả tính toán, nhóm sử dụng công cụ Len Selector của nhà sản xuất Basler để mô phỏng lại các thông số đã chọn. Kết quả thu được như hình bên dưới:
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{pictures/section1/s1_p05.png}
+    \caption{Đối chiếu các thông số bằng công cụ Len Selector của Basler}
+    \label{fig:len_selector}
+\end{figure}
+Như vậy, các kết quả tính toán tương đối khớp với kết quả từ công cụ Len Selector của nhà sản xuất Basler.
+\cleardoublepage 

@@ -1,4 +1,4 @@
-\documentclass[12pt,a4paper]{report}
+\documentclass[12pt,a4paper]{article}
 \input{library}
 \addbibresource{references.bib} 
 
@@ -15,7 +15,7 @@
         \end{tabular} 	
     \end{tabular}
 }
-\fancyhead[R]{CHƯƠNG \thechapter}
+\fancyhead[R]{PHẦN \thesection}
 % Footer
 \fancyfoot[C]{\thepage} % số trang giữa
 \renewcommand{\headrulewidth}{0.3pt}
@@ -28,9 +28,11 @@
     \listoffigures
     \newpage
     \normalsize
-    \include{chapter5}
-    % \include{chapter2} 
-    % \include{chapter3} 
+    \include{section1}
+    \include{section2}
+    \include{section3}
+    \include{section5}
+    \include{section6} 
     % \appendix
     % \include{appendixA}
     % \nocite{*}
