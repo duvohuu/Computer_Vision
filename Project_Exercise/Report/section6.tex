@@ -89,7 +89,12 @@ def click_left(event, x, y, flags, param):
                     \end{lstlisting}
                     Xử lý tuơng tự với điểm bên phải.
                     \item Xem tâm tọa độ là camera bên trái, tính toán tọa độ 3D của điểm đã chọn từ các công thức trong Slide:
-                    
+                    \begin{figure}[H]
+                         \centering
+                         \includegraphics[width=1\textwidth]{pictures/section6/s6_p3_StereoSympol.png}
+                         \caption{Công thức từ Slide}
+                         \label{fig:stereo_3dpoint}
+                    \end{figure}
                     \begin{lstlisting}
 def point3d(u_left, v_left, u_right, v_right, K, B):
     f_x = K[0,0]
@@ -107,7 +112,38 @@ def point3d(u_left, v_left, u_right, v_right, K, B):
     X = (u_left) * Z / f_x  
     Y = (v_left) * Z / f_y  
     return np.array([X, Y, Z]), d
-                         \end{lstlisting}
+                    \end{lstlisting}
+                    \item Gọi hàm event cho click chuột chọn điểm trên ảnh:
+                    \begin{lstlisting}
+cv2.setMouseCallback("Left image",  click_left,  left_disp)
+cv2.setMouseCallback("Right image", click_right, right_disp)
+
+cv2.imshow("Left image", left_disp)
+cv2.imshow("Right image", right_disp)
+                    \end{lstlisting}
+                    \item In kết quả thu đuợc ra màn hình:
+                    \begin{lstlisting}
+print("\n" + "=" * 60)
+print("THE RESULT IN 3D")
+print("=" * 60)
+print(f"P1 (3D): X={P1_3d[0]:.4f} mm, Y={P1_3d[1]:.4f} mm, Z={P1_3d[2]:.4f} mm")
+print(f"P2 (3D): X={P2_3d[0]:.4f} mm, Y={P2_3d[1]:.4f} mm, Z={P2_3d[2]:.4f} mm")
+print(f"\nDisparity P1: {d1:.2f} pixels")
+print(f"Disparity P2: {d2:.2f} pixels")
+print(f"\nLength of segment P1-P2: L = {length_m:.4f} mm")
+print("=" * 60)
+                    \end{lstlisting}
                \end{itemize}
-               
-               
+          \subsubsection{Kết quả thu được}
+               \begin{itemize}
+                    \item Kích thước tính toán đuợc:
+                    \begin{figure}[H]
+                         \centering
+                         \includegraphics[width=0.8\textwidth]{pictures/section6/s6_p4_Result.png}
+                         \caption{Kết quả đo chiều dài vật thể}
+                         \label{fig:stereo_result}
+                    \end{figure}
+                    \item Kích thước thực tế đo bằng thước: 90 mm $\Rightarrow$ Sai số: $|93.2932 - 90| = 3.2932$ mm hay 3.66\%. 
+               \end{itemize}
+     \subsection{Kết luận}           
+          \hspace*{0.6cm}Kết qua thu được thông qua xử lý ảnh từ Stereo Camera cho thấy phép đo chiều dài vật thể có độ chính xác khá cao, với sai số chỉ khoảng 3.66\%. Điều này chứng tỏ rằng phương pháp Stereo Vision là một công cụ hữu ích và hiệu quả trong việc đo đạc các kích thước vật thể trong không gian 3D. Tuy nhiên, để đạt được độ chính xác cao hơn, cần chú ý đến việc hiệu chỉnh camera, lựa chọn điểm đo chính xác và xử lý ảnh một cách cẩn thận.
