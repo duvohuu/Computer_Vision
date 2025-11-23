@@ -1,5 +1,5 @@
 \section{Câu 6}
-    Thực hiện tính toán độ dài vật sử dụng Stereo Camera và kiểm tra lại sai số.
+    \hspace*{0.6cm}\textbf{Thực hiện tính toán độ dài vật sử dụng Stereo Camera và kiểm tra lại sai số.}
     \subsection{Cơ sở lý thuyết}
          \hspace*{0.6cm}Stereo Vision là phương pháp sử dụng hai camera để tái tạo lại hình ảnh 3D của một vật thể từ hai góc nhìn khác nhau. Bằng cách phân tích sự khác biệt (disparity) giữa hai hình ảnh, ta có thể tính toán khoảng cách từ camera đến vật thể và từ đó xác định độ dài của vật thể.\\
          \hspace*{0.6cm}Giả sử ta có hai camera song song với nhau, cách nhau một khoảng gọi là baseline $B$. Khi một điểm trong không gian 3D được chiếu lên hai hình ảnh từ hai camera, nó sẽ xuất hiện ở các vị trí khác nhau trên hai hình ảnh. Giả sử tọa độ của điểm trên hình ảnh bên trái là $(u_L, v_L)$ và trên hình ảnh bên phải là $(u_R, v_R)$. Sự khác biệt về tọa độ ngang giữa hai hình ảnh được gọi là disparity $d$, được tính bằng công thức:
