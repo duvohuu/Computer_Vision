@@ -40,22 +40,16 @@ objp[0, :, :2] = (
 
 # ================== ĐƯỜNG DẪN ẢNH & FOLDER LƯU ==================
 
-# Lấy đường dẫn thư mục chứa script
-script_dir = os.path.dirname(os.path.abspath(__file__))
-
 # Folder chứa ảnh bàn cờ
-image_dir = os.path.join(script_dir, "images")
+image_dir = r'D:\HK251\vision\BTL\Bai_3\pictures'
 images = glob.glob(os.path.join(image_dir, '*.jpg'))
 
-if len(images) == 0:
-    images = glob.glob(os.path.join(image_dir, '*.png'))
-
 # Folder để lưu ảnh đã vẽ góc
-save_dir = os.path.join(script_dir, "calib_images")
+save_dir = r'D:\HK251\vision\BTL\Bai_3\calib_images'
 os.makedirs(save_dir, exist_ok=True)   # tạo nếu chưa có
 
 # File JSON lưu kết quả calib
-calib_json = os.path.join(script_dir, "camera_calibration.json")
+calib_json = r'D:\HK251\vision\BTL\Bai_3\calib_params.json'
 
 print("Tìm được", len(images), "ảnh trong folder", image_dir)
 
@@ -95,7 +89,7 @@ for fname in images:
     )
 
     if ret:
-        print(f"Detected corners in image {os.path.basename(fname)}")
+        print(f"Detected corners in image {fname}")
 
         # Thêm tập điểm 3D (mm) và 2D (pixel)
         objpoints.append(objp)
@@ -206,42 +200,6 @@ print("\n==========================================\n")
 
 # ================== LƯU CÁC MA TRẬN CẦN THIẾT RA JSON ==================
 
-# Tính px_per_mm từ tất cả ảnh
-all_dists = []
-cols = CHECKERBOARD[0]
-rows = CHECKERBOARD[1]
-
-for corners in imgpoints:
-    cs = corners.reshape(-1, 2)
-    
-    # Khoảng cách theo hàng
-    for r in range(rows):
-        for c in range(cols - 1):
-            idx1 = r * cols + c
-            idx2 = r * cols + c + 1
-            p1 = cs[idx1]
-            p2 = cs[idx2]
-            all_dists.append(np.linalg.norm(p1 - p2))
-    
-    # Khoảng cách theo cột
-    for r in range(rows - 1):
-        for c in range(cols):
-            idx1 = r * cols + c
-            idx2 = (r + 1) * cols + c
-            p1 = cs[idx1]
-            p2 = cs[idx2]
-            all_dists.append(np.linalg.norm(p1 - p2))
-
-avg_px_per_square = float(np.mean(all_dists))
-px_per_mm = avg_px_per_square / square_size_mm
-mm_per_px = square_size_mm / avg_px_per_square
-
-print("\n===== SCALE PIXEL ↔ MM =====")
-print(f"Avg edge length: {avg_px_per_square:.4f} px (cho 1 cạnh ô {square_size_mm} mm)")
-print(f"1 mm ≈ {px_per_mm:.4f} px")
-print(f"1 px ≈ {mm_per_px:.6f} mm")
-print("============================\n")
-
 calib_data = {
     "image_width": int(w),
     "image_height": int(h),
@@ -252,11 +210,6 @@ calib_data = {
     "camera_matrix": mtx.tolist(),          # K
     "dist_coeffs": dist.tolist(),           # hệ số méo
     "new_camera_matrix": newcam_mtx.tolist(),
-
-    # Thêm px_per_mm để Question_6 dùng
-    "px_per_mm": px_per_mm,
-    "mm_per_px": mm_per_px,
-    "avg_px_per_square": avg_px_per_square,
 
     # rvecs, tvecs cho từng ảnh
     "rvecs": [rvec.tolist() for rvec in rvecs],
