@@ -26,12 +26,15 @@ u11 = M11 / M00 - x_centroid * y_centroid
 u20 = M20 / M00 - x_centroid**2
 u02 = M02 / M00 - y_centroid**2
 theta = 0.5 * np.arctan2(2 * u11, u20 - u02)  # in radians
+print("Kết quả lập trình tính tay")
 print("M00: ", M00, " M10: ", M10, " M01: ", M01)
 print("M11 = ", M11, " M20 = ", M20, " M02 = ", M02)
 print("Area: ", M00, " pixels")
 print("Centroid: ", (x_centroid, y_centroid), "≈", (int(x_centroid), int(y_centroid)))
 print("Orientation angle (degrees): ", np.degrees(theta))
 
+print("------------------------------")
+print("Kết quả sử dụng OpenCV")
 
 # Assuming img is your binary image (0 and 255)
 contours, _ = cv2.findContours(img, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
