@@ -2,7 +2,6 @@
     \hspace*{0.6cm}\textbf{Tính toán chọn vùng làm việc cho camera so sánh với thực tế và tính toán}
     \subsection{Xác định các thông số sử dụng cho tính toán}
         \subsubsection{Lựa chọn camera}
-            \hspace*{0.6cm}Vì camera nhìn từ trên xuống nên FOV tối thiểu thực tế = chiều dài tối thiểu x chiều rộng tối thiểu = 268mm x 164mm. \\
             \hspace*{0.6cm}Nhóm sử dụng camera Basler a2A1920-51gcBAS với các thông số cần sử dụng:
             \begin{itemize}
                 \item Resolution: 1920x1200 pixels
@@ -60,12 +59,10 @@
                     FOV_v = \frac{4.1 \times 445}{8} = 228.0625mm
                 \end{equation}
 
-            \subsection{So sánh với yêu cầu thực tế}
             \begin{itemize}
                 \item FOV tính toán được: 367.125mm x 228.0625mm
-                \item FOV tối thiểu yêu cầu: 268mm x 164mm
+                \item FOV thực tế: 388 mm x 238 mm
             \end{itemize}
-            \hspace*{0.6cm}\textbf{Kết luận:} FOV tính toán lớn hơn FOV tối thiểu yêu cầu, đảm bảo camera có thể quan sát toàn bộ vùng làm việc cần thiết.
             \cleardoublepage
             \subsection{Tính sai số của đường chéo FOV}
             \begin{itemize}
@@ -75,11 +72,11 @@
                 \end{equation}
                 \item Đường chéo FOV đo được thực tế:
                 \begin{equation}
-                    \sqrt{362.5^2 + 230^2} = 429.31 mm
+                    \sqrt{388^2 + 238^2} = 455.179 mm
                 \end{equation}
                 \item Sai số đường chéo FOV:
                 \begin{equation}
-                    \frac{|429.31 - 432.196|}{429.31} \times 100\% = 0.672\%
+                    \frac{|455.179 - 432.196|}{455.179} \times 100\% = 5.05\%
                 \end{equation}
             \end{itemize}
 

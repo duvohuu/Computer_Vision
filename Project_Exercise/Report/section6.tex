@@ -13,7 +13,7 @@
          trong đó $f$ là tiêu cự của camera với thứ nguyên là pixel.\\
           \hspace*{0.6cm}Khi đã biết khoảng cách $Z$, ta có thể tính toán độ dài thực tế của vật thể bằng cách sử dụng các tọa độ trên hình ảnh và tỷ lệ giữa các đơn vị đo lường trong không gian 3D và trên hình ảnh.
           
-    \subsection{Phương pháp thực hiện}
+    \subsection{Đo độ dài vật}
           \subsubsection{Buớc 1: Chuẩn bị dữ liệu}
                \begin{itemize}
                     \item Chuẩn bị hai camera đã được hiệu chỉnh (calibrated) để loại bỏ sai số do biến dạng ống kính.
@@ -121,6 +121,12 @@ cv2.setMouseCallback("Right image", click_right, right_disp)
 cv2.imshow("Left image", left_disp)
 cv2.imshow("Right image", right_disp)
                     \end{lstlisting}
+                    \begin{figure}[H]
+                         \centering
+                         \includegraphics[width=0.8\textwidth]{pictures/section6/s6_p4_2Points.png}
+                         \caption{Chọn 2 điểm P1, P2 trên ảnh}
+                         \label{fig:stereo_selectpoints}
+                    \end{figure}
                     \item In kết quả thu đuợc ra màn hình:
                     \begin{lstlisting}
 print("\n" + "=" * 60)
@@ -139,11 +145,109 @@ print("=" * 60)
                     \item Kích thước tính toán đuợc:
                     \begin{figure}[H]
                          \centering
-                         \includegraphics[width=0.8\textwidth]{pictures/section6/s6_p4_Result.png}
+                         \includegraphics[width=0.8\textwidth]{pictures/section6/s6_p5_Result.png}
                          \caption{Kết quả đo chiều dài vật thể}
                          \label{fig:stereo_result}
                     \end{figure}
                     \item Kích thước thực tế đo bằng thước: 90 mm $\Rightarrow$ Sai số: $|93.2932 - 90| = 3.2932$ mm hay 3.66\%. 
                \end{itemize}
+     \subsection{Tìm các góc Roll, Pitch, Yaw của vật thể}
+          \subsubsection{Chuẩn bị dữ liệu}
+               \hspace*{0.6cm}Cho trục X local theo huớng từ phải sang trái,Vì vật thể là 1 tấm card mỏng đuợc đặt trên một mặt phẳng cố định song song với camera và mặt đất cho nên 2 góc Roll và Pitch ban đầu đều là 0 độ. Chỉnh vật thể trong FOV sao cho 2 cạnh của vật thể song song với 2 cạnh của khung hình ảnh $\Rightarrow$ Góc Yaw ban đầu cũng là 0 độ.\\
+
+          \subsubsection{Buớc 1: Tạo ma trận R (Rotation Matrix)}
+               \begin{itemize}
+                    \item Lấy thêm điểm P3 cùng 2 điểm P1 P2 truớc đó để tạo thành mặt phẳng.
+                    \begin{lstlisting}
+P3_3d, d3 = point3d(pts_left[2][0], pts_left[2][1], 
+          pts_right[2][0], pts_right[2][1], K_new, B)
+                    \end{lstlisting}
+                    \begin{figure}[H]
+                         \centering
+                         \includegraphics[width=0.7\textwidth]{pictures/section6/s6_p6_3Points.png}
+                         \caption{Lấy 3 điểm trong không gian 3D}
+                         \label{fig:3d_points}
+                    \end{figure}
+                    \item Gọi hàm compute\_orientation\_svd(P1\_3d, P2\_3d, P3\_3d) xử lý:
+                    \begin{itemize}
+                         \item Tìm 3 vector chỉ phương của 3 trục X, Y, Z local từ 3 điểm P1, P2, P3.
+                         \begin{lstlisting}
+# Vector from P1 to P2 (local X axis)
+v1 = P2 - P1
+v1 = v1 / np.linalg.norm(v1)  # normalize
+
+# Vector from P1 to P3
+v2 = P3 - P1
+
+# Local Z axis (perpendicular to the plane P1-P2-P3)
+v3 = np.cross(v1, v2)
+v3 = v3 / np.linalg.norm(v3)
+
+# Local Y axis (perpendicular to X and Z)
+v2 = np.cross(v3, v1)
+v2 = v2 / np.linalg.norm(v2)
+                         \end{lstlisting}
+                         \item Ghép 3 vector thành ma trận R 
+                         \[
+                         R = \begin{bmatrix}
+                         X_{\text{local}} & Y_{\text{local}} & Z_{\text{local}}
+                         \end{bmatrix}
+                         \]:
+                         \begin{lstlisting}
+R_local = np.column_stack([v1, v2, v3])
+                         \end{lstlisting}
+                         \item Chuẩn hoá bằng SVD:
+                         \begin{lstlisting}
+U, S, Vt = np.linalg.svd(R_local)
+R = U @ Vt
+                         \end{lstlisting}
+                    \end{itemize}
+                    
+               \end{itemize}
+  
+
+          \subsubsection{Buớc 2: Chuyển ma trận R sang góc Euler (Roll, Pitch, Yaw)}
+               \hspace*{0.6cm}Gọi hàm rotation\_matrix\_to\_euler\_angles(R) xử lý
+               \begin{itemize}
+                    \item Kiểm tra gimbal lock:
+                    \begin{lstlisting}
+sy = math.sqrt(R[0, 0] * R[0, 0] + R[1, 0] * R[1, 0])
+                    \end{lstlisting}
+                    \item Tính các góc Roll, Pitch, Yaw từ Arctan:    
+                    \begin{figure}[H]
+                         \centering
+                         \includegraphics[width=0.6\textwidth]{pictures/section6/s6_p7_EulerAngles.png}
+                         \caption{Tính các góc Euler từ ma trận R}
+                         \label{fig:euler_angles}
+                    \end{figure}
+                    \begin{lstlisting}
+roll = np.arctan2(R[2,1], R[2,2])
+pitch = np.arctan2(-R[2,0], sy)
+yaw = np.arctan2(R[1,0], R[0,0])
+                    \end{lstlisting}
+               \end{itemize}
+          \subsubsection{Kết quả thu được}
+               \begin{itemize}
+                    \item Ma trận R thu được:
+                    \begin{figure}[H]
+                         \centering
+                         \includegraphics[width=0.75\textwidth]{pictures/section6/s6_p8_RResult.png}
+                         \caption{Ma trận R thu được}
+                         \label{fig:R_matrix}
+                    \end{figure}
+                    \item Các góc Roll, Pitch, Yaw thu được (đơn vị độ):
+                    \begin{figure}[H]
+                         \centering
+                         \includegraphics[width=0.75\textwidth]{pictures/section6/s6_p9_EulerResult.png}
+                         \caption{Góc Roll, Pitch, Yaw thu được}
+                         \label{fig:roll_pitch_yaw}
+                    \end{figure}
+                    \item Sai số các góc so với giá trị thực tế (0 độ):
+                    \begin{itemize}
+                         \item Sai số Roll: 3.54 độ 
+                         \item Sai số Pitch: 5.54 độ
+                         \item Sai số Yaw: 0.13 độ
+                    \end{itemize}
+               \end{itemize}
      \subsection{Kết luận}           
-          \hspace*{0.6cm}Kết qua thu được thông qua xử lý ảnh từ Stereo Camera cho thấy phép đo chiều dài vật thể có độ chính xác khá cao, với sai số chỉ khoảng 3.66\%. Điều này chứng tỏ rằng phương pháp Stereo Vision là một công cụ hữu ích và hiệu quả trong việc đo đạc các kích thước vật thể trong không gian 3D. Tuy nhiên, để đạt được độ chính xác cao hơn, cần chú ý đến việc hiệu chỉnh camera, lựa chọn điểm đo chính xác và xử lý ảnh một cách cẩn thận.
+          \hspace*{0.6cm}Kết qua thu được thông qua xử lý ảnh từ Stereo Camera cho thấy phép đo chiều dài vật thể và các góc Roll, Pitch, Yaw có độ chính xác khá cao, với sai số chỉ khoảng 3.66\% cho chiều dài và < 5 độ với các góc Euler. Điều này chứng tỏ rằng phương pháp Stereo Vision là một công cụ hữu ích và hiệu quả trong việc đo đạc các kích thước vật thể trong không gian 3D. Tuy nhiên, để đạt được độ chính xác cao hơn, cần chú ý đến việc hiệu chỉnh camera, lựa chọn điểm đo chính xác và xử lý ảnh một cách cẩn thận.
