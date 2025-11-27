@@ -1,3 +1,4 @@
 .exe
 .venv
 **/build/
+build/
