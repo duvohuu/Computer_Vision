@@ -28,7 +28,7 @@ MAX_PEAKS = 3
 # rotation & scale search space
 ROT_STEP = 5             
 SCALE_MIN, SCALE_MAX = 0.5, 1.5
-SCALE_STEPS = 6              
+SCALE_STEPS = 6                  
 
 ROTATIONS = np.arange(0, 360, ROT_STEP)
 SCALES = np.linspace(SCALE_MIN, SCALE_MAX, SCALE_STEPS)

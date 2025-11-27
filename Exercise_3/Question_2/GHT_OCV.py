@@ -7,7 +7,7 @@ import numpy as np
 # ===============================
 BASE = os.path.dirname(os.path.abspath(__file__))
 PIC_DIR = os.path.join(BASE, "pictures")
-TEMPLATE_PATH = os.path.join(PIC_DIR, "templates", "template_6.png")
+TEMPLATE_PATH = os.path.join(PIC_DIR, "templates", "template_5.png")
 SCENE_PATH = os.path.join(PIC_DIR, "aircraft_scene.png")
 
 # Create result folder inside pictures
@@ -21,14 +21,14 @@ OUT_PATH = os.path.join(RESULT_DIR, f"{tpl_name}_result_OCV.png")
 # ===============================
 # PARAMETERS
 # ===============================
-ANGLE_STEP = 5
+ANGLE_STEP = 4
 SCALE_MIN, SCALE_MAX = 0.5, 1.5
-SCALE_STEPS = 7
+SCALE_STEPS = 6
 CANNY_LOW = 40
 CANNY_HIGH = 120
 MIN_DIST = 40
 VOTE_THRESH = 80
-MAX_FINAL = 1
+MAX_FINAL = 3
 
 ROTATIONS = np.arange(0, 360, ANGLE_STEP)
 SCALES = np.linspace(SCALE_MIN, SCALE_MAX, SCALE_STEPS)
