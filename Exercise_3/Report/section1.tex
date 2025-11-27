@@ -175,3 +175,125 @@ for contour in contours:
                     \label{s1_p02}
                \end{figure}
 
+
+
+     \subsection{Đếm số lượng xe của mỗi nhóm trên lane tương ứng nhóm từ $1 \rightarrow 6$ từ lane trái ngoài cùng qua phải (nhóm 5)}
+          \hspace*{0.6cm}\textbf{Các bước thực hiện}
+          \begin{itemize}
+               \item \textbf{Bước 1: Đọc video và vẽ đường đếm}
+               \begin{itemize}[label={--}]
+                    \item Chương trình mở video và đọc frame đầu tiên.
+                    \item Frame này được resize về kích thước $960\times540$ pixel và hiển thị lên cửa sổ "Frame".
+                    \item Người dùng click chuột trái hai lần để tạo một đường đếm: điểm đầu (p1) và điểm cuối (p2). Có thể lặp lại thao tác để tạo tối đa 6 đường đếm tương ứng với 6 làn xe.
+                    \begin{figure}[H]
+                         \centering
+                         \includegraphics[width=1\textwidth]{pictures/chapter1/c01_p03_1b_pic1.png}
+                         \caption{Hình ảnh click 2 điểm tạo ra đường thẳng màu xanh để đếm xe đi qua}
+                         \label{s1_p03}
+                    \end{figure}
+                    \item Mỗi đường đếm được lưu với các thông tin: tọa độ hai đầu mút, biến đếm số xe (count) và biến ghi nhận frame cuối cùng đã đếm ($\text{last\_count\_frame}$). Khi hoàn tất, người dùng nhấn phím $'s'$ để bắt đầu xử lý video.
+               \end{itemize}
+               \item \textbf{Bước 2: Khởi tạo bộ tách nền và các kernel hình thái học}
+               \begin{itemize}[label={--}]
+                    \item Sử dụng cv2.createBackgroundSubtractorMOG2 với:
+                    \begin{lstlisting}[language=Python]
+history = 450,
+varThreshold = 17,
+detectShadows = True                         
+                    \end{lstlisting}
+                    \item Tạo kernel Open dạng ellipse kích thước (3, 3) để xóa nhiễu nhỏ.
+                    \item Tạo kernel Close dạng ellipse kích thước (6, 6) để nối các vùng foreground và lấp lỗ.
+                    \begin{lstlisting}[language=Python]
+backSub = cv2.createBackgroundSubtractorMOG2(
+    history=450, varThreshold=17, detectShadows=True
+)
+
+kernel_open  = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, KERNEL_OPEN_SIZE)
+kernel_close = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, KERNEL_CLOSE_SIZE)
+                    \end{lstlisting}
+               \end{itemize}
+               \item \textbf{Bước 3: Xử lý từng frame trong video}
+               \begin{itemize}[label={--}]
+                    \item Với mỗi frame, chương trình resize về $960\times540$ pixel.
+                    \item Áp dụng bộ tách nền MOG2 để thu được foreground mask.
+                    \item Dùng threshold với ngưỡng 200 để loại bỏ shadow và giữ lại vùng trắng biểu diễn thân xe.
+                    \item Áp dụng lần lượt opening, closing, dilation để tối ưu hóa dạng blob của xe.
+                    \item Sử dụng cv2.findContours để tìm các contour ngoài cùng trên mask đã xử lý.
+                    \begin{lstlisting}[language=Python]
+ret, frame = cap.read()
+if not ret:
+     break
+frame_idx += 1
+frame = cv2.resize(frame, (960, 540))
+# ---------- 2.1. GET FG MASK ----------
+fgMask = backSub.apply(frame)
+_, fgMask = cv2.threshold(fgMask, 200, 255, cv2.THRESH_BINARY)
+# ---------- 2.2. MORPHOLOGY (OPEN + CLOSE) ----------
+fgMask = cv2.morphologyEx(fgMask, cv2.MORPH_OPEN,
+                         kernel_open, iterations=1)
+fgMask = cv2.morphologyEx(fgMask, cv2.MORPH_CLOSE,
+                         kernel_close, iterations=2)
+fgMask = cv2.dilate(fgMask, kernel_close, iterations=1)
+                    \end{lstlisting}
+               \end{itemize}
+               \item \textbf{Bước 4: Lọc blob và xác định tâm xe}
+               \begin{itemize}
+                    \item Với mỗi contour, chương trình tính diện tích và bounding box $(x, y, w, h)$.
+                    \item Hàm \text{is\_valid\_blob} kiểm tra các điều kiện:
+                    \begin{itemize}[label={+}]
+                         \item Diện tích nằm trong $[800, 50000]$ pixel.
+                         \item Chiều rộng và chiều cao bounding box đều lớn hơn 15 pixel.
+                         \item Tỉ lệ khung hình $\dfrac{w}{h}$ nằm trong $[0.4, 3.0]$.
+                    \end{itemize}
+                    \item Các contour thỏa điều kiện được coi là xe, được vẽ bounding box màu xanh lá và tâm xe là điểm giữa của bounding box.
+                    \begin{lstlisting}[language=Python]
+contours, _ = cv2.findContours(fgMask, cv2.RETR_EXTERNAL,
+                              cv2.CHAIN_APPROX_SIMPLE)
+
+for cnt in contours:
+     if not is_valid_blob(cnt):
+          continue
+     x, y, w_box, h_box = cv2.boundingRect(cnt)
+     cx = x + w_box // 2
+     cy = y + h_box // 2
+                    \end{lstlisting}
+               \end{itemize}
+               \item \textbf{Bước 5: Kiểm tra xe cắt qua đường đếm và cập nhật biến đếm}
+               \begin{itemize}[label={--}]
+                    \item Dùng hàm \text{point\_to\_segment\_distance} để tính khoảng cách từ tâm xe tới đoạn thẳng của từng line.
+                    \item Nếu khoảng cách nhỏ hơn \text{DIST\_THRESH = 10} pixel và số frame hiện tại cách frame lần cuối đếm của line đó ít nhất \text{MIN\_FRAME\_GAP = 6}, bộ đếm count của line được cộng thêm 1 và \text{last\_count\_frame} được cập nhật.
+                    \item Nhờ cơ chế này, mỗi xe chỉ được đếm một lần khi cắt qua vùng lân cận của đường đếm.
+                    \begin{lstlisting}[language=Python]
+ for line in lines:
+     x1, y1 = line['p1']
+     x2, y2 = line['p2']
+
+     dist = point_to_segment_distance(cx, cy, x1, y1, x2, y2)
+
+     if dist < DIST_THRESH:
+          if frame_idx - line['last_count_frame'] >= MIN_FRAME_GAP:
+          line['count'] += 1
+          line['last_count_frame'] = frame_idx                         
+                    \end{lstlisting}
+               \end{itemize}
+               \item \textbf{Bước 6: Hiển thị kết quả tạm thời}
+               \begin{itemize}[label={--}]
+                    \item Trên frame màu, chương trình vẽ:
+                    \begin{itemize}[label={+}]
+                         \item Các bounding box của xe.
+                         \item Tâm xe bằng chấm đỏ.
+                         \item Các đường đếm bằng màu xanh dương và nhãn $i: n$ biểu diễn số lượng xe đã đi qua line thứ i.
+                         \item Cửa sổ "Foreground" hiển thị mask đen - trắng của foreground, giúp người dùng đánh giá chất lượng tách nền.
+                         \begin{figure}[H]
+                              \centering
+                              \includegraphics[width=1\textwidth]{pictures/chapter1/c01_p03_1b_pic2.png}
+                              \caption{Hình ảnh hiển thị kết quả đếm xe tạm thời trên từng frame}
+                              \label{s1_p04}
+                         \end{figure}
+                    \end{itemize}
+               \end{itemize}
+               \item \textbf{Nhận xét}\\
+               \hspace*{0.6cm}Trong quá trình chạy video, khi các phương tiện đi qua vùng lân cận đường đếm trên làn số 5, tâm bounding box của chúng lần lượt cắt qua đường đếm. Với ngưỡng khoảng cách 10 pixel và khoảng cách tối thiểu giữa hai lần đếm là 6 frame, chương trình đếm được tổng cộng 16 lượt xe đi qua làn số 5. Kết quả này trùng khớp với việc quan sát thủ công trên video, do đó có thể coi là số lượng xe được đếm chính xác.
+          \end{itemize}
+
+
