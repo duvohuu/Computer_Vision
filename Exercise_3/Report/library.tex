@@ -7,23 +7,30 @@
 \usepackage{listings} % Thêm gói listings để chèn code
 \usepackage{xcolor} % Màu cho code
 \lstset{
-    language=Matlab,
-    basicstyle=\footnotesize\ttfamily,
-    numbers=none,
+    language=Python,
+    basicstyle=\small\ttfamily,
+    numbers=left,
     numberstyle=\tiny\color{gray},
     stepnumber=1,
-    numbersep=0.01pt,
-    tabsize=2,
+    numbersep=8pt,
+    tabsize=4,
     breaklines=true,
     breakatwhitespace=false,
-    xleftmargin=0cm, % for line numbers
-    framexleftmargin=0cm, % for code frame
-    keywordstyle=\color{blue},
-    commentstyle=\color{green},
-    stringstyle=\color{orange},
+    xleftmargin=1.5em,
+    framexleftmargin=1.5em,
+    keywordstyle=\color{blue}\bfseries,
+    commentstyle=\color{green!60!black}\itshape,
+    stringstyle=\color{orange!80!red},
+    identifierstyle=\color{black},
+    emphstyle=\color{red},
     frame=single,
-    rulecolor=\color{black},
-    basicstyle=\ttfamily,
+    rulecolor=\color{black!30},
+    backgroundcolor=\color{gray!5},
+    showstringspaces=false,
+    captionpos=b,
+    morekeywords={True, False, None, self, cv2, np, plt},
+    emph={range, len, print, open, str, int, float, list, dict, enumerate, zip},
+    emphstyle=\color{purple!80!blue},
 }
 
 \lstset{
@@ -100,3 +107,10 @@
 \everymath{\color{black}}
 \pagestyle{fancy}
 
+% Đánh số theo section
+\numberwithin{equation}{section}  % Công thức: (1.1), (1.2), (2.1)...
+\numberwithin{figure}{section}    % Hình: Figure 1.1, Figure 1.2...
+\numberwithin{table}{section}     % Bảng: Table 1.1, Table 1.2...
+\AtBeginDocument{%
+    \counterwithin{lstlisting}{section}
+}
