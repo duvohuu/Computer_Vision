@@ -6,22 +6,29 @@ from scipy.ndimage import maximum_filter
 # ===============================
 BASE = os.path.dirname(os.path.abspath(__file__))
 PIC_DIR = os.path.join(BASE, "pictures")
-TEMPLATE_PATH = os.path.join(PIC_DIR, "templates", "template_1.png")
+TEMPLATE_PATH = os.path.join(PIC_DIR, "templates", "template_4.png")
 SCENE_PATH = os.path.join(PIC_DIR, "aircraft_scene.png")
-OUT_PATH = os.path.join(PIC_DIR, "ght_basic_result.png")
+
+# Create result folder inside pictures
+RESULT_DIR = os.path.join(PIC_DIR, "results")
+os.makedirs(RESULT_DIR, exist_ok=True)
+
+# Output file named after template
+tpl_name = os.path.splitext(os.path.basename(TEMPLATE_PATH))[0]
+OUT_PATH = os.path.join(RESULT_DIR, f"{tpl_name}_result.png")
 
 # ===============================
 # PARAMETERS
 # ===============================
 CANNY_LOW, CANNY_HIGH = 40, 120
-ANGLE_BIN = 10               
-ACC_REL_THRESH = 0.5        
-MAX_PEAKS = 3             
+ANGLE_BIN = 8               
+ACC_REL_THRESH = 0.2        
+MAX_PEAKS = 3            
 
 # rotation & scale search space
-ROT_STEP = 3               
+ROT_STEP = 5             
 SCALE_MIN, SCALE_MAX = 0.5, 1.5
-SCALE_STEPS = 3             
+SCALE_STEPS = 6              
 
 ROTATIONS = np.arange(0, 360, ROT_STEP)
 SCALES = np.linspace(SCALE_MIN, SCALE_MAX, SCALE_STEPS)
@@ -85,7 +92,6 @@ def vote_with_rot_scale_vectorized(scene_gray, rtable_idx, r_vectors):
     n_scales = len(SCALES)
 
     # Tạo 4D accumulator: [H, W, n_scales, n_rots]
-    # Nhưng để tiết kiệm RAM, chỉ lưu sparse votes
     acc_4d = np.zeros((H, W, n_scales, n_rots), dtype=np.int32)
 
     ys_scene, xs_scene = np.where(edges > 0)
@@ -100,7 +106,6 @@ def vote_with_rot_scale_vectorized(scene_gray, rtable_idx, r_vectors):
     
     print(f"Processing {n_scene} scene edges...")
 
-    # ===== KHÔNG CÒN VÒNG FOR! =====
     # Strategy: Xử lý theo batches của (rotation, scale) combinations
     
     for rot_idx in range(n_rots):
