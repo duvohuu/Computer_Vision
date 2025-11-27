@@ -33,13 +33,21 @@ Sau khi tính được góc nghiêng chính, tiến hành xoay ảnh về vị t
 \end{equation}
 
 Với $\theta = \text{main\_angle} - 90°$, và tâm xoay là tâm ảnh.
+\begin{lstlisting}[language=Python]
+def rotate_image(img, angle_deg):
+    h, w = img.shape[:2]
+    center = (w // 2, h // 2)
+    M = cv2.getRotationMatrix2D(center, angle_deg, 1.0)
+    rotated = cv2.warpAffine(img, M, (w, h), flags=cv2.INTER_LINEAR)
+    return rotated, M
+\end{lstlisting}
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\textwidth]{pictures/chapter3/s3_p02.png}
     \caption{Kết quả ảnh sau khi xoay}
     \label{fig:label}
 \end{figure}
-
+\cleardoublepage
 \subsubsection*{Bước 3: Phát hiện lưới các ô đỗ xe từ vạch trắng (detect\_grid\_slots\_from\_img)}
 Đây là bước quan trọng nhất, bao gồm nhiều công đoạn nhỏ để phát hiện và tạo lưới các ô đỗ xe.
 
@@ -131,25 +139,97 @@ Sử dụng kênh Saturation (S) trong không gian màu HSV để phân biệt �
         \end{cases}
     \end{equation}
 \end{enumerate}
+\begin{lstlisting}[language=Python]
+def classify_slots(rot_img, slots,
+                   s_thresh=50,
+                   area_ratio_thresh=0.12):
+    occupied = []
+    empty    = []
 
+    for (x1, y1, x2, y2) in slots:
+        slot = rot_img[y1:y2, x1:x2]
+        if slot.size == 0:
+            continue
+
+        hsv = cv2.cvtColor(slot, cv2.COLOR_BGR2HSV)
+        _, S, _ = cv2.split(hsv)
+
+        mask = (S > s_thresh).astype(np.uint8)
+
+        kernel = np.ones((3, 3), np.uint8)
+        mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel, 1)
+        mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel, 1)
+
+        ratio = mask.mean()  # 0..1
+
+        if ratio > area_ratio_thresh:
+            occupied.append((x1, y1, x2, y2, ratio))
+        else:
+            empty.append((x1, y1, x2, y2, ratio))
+
+    return occupied, empty
+\end{lstlisting}
+\cleardoublepage
 \subsubsection*{Bước 5: Vẽ kết quả trên ảnh đã xoay (draw\_result)}
 Vẽ các ô đỗ xe trên ảnh đã xoay:
 \begin{itemize}
     \item Vẽ hình chữ nhật màu đỏ cho ô có xe
     \item Vẽ hình chữ nhật màu xanh lá cho ô trống
 \end{itemize}
+\begin{lstlisting}{language=Python}
+    def draw_result(rot_img, occupied, empty):
+    out = rot_img.copy()
+
+    for (x1, y1, x2, y2, _) in occupied:
+        cv2.rectangle(out, (x1, y1), (x2, y2), (0, 0, 255), 2)  
+
+    for (x1, y1, x2, y2, _) in empty:
+        cv2.rectangle(out, (x1, y1), (x2, y2), (0, 255, 0), 2)  
+
+    return out
+\end{lstlisting}
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\textwidth]{pictures/chapter3/s3_p04.png}
     \caption{Kết quả các ô đỗ xe trên ảnh đã xoay}
     \label{fig:label}
 \end{figure}
+\cleardoublepage
 \subsubsection*{Bước 6: Vẽ kết quả về ảnh gốc (draw\_on\_original)}
 Hiển thị kết quả trên ảnh gốc (chưa xoay):
 \begin{itemize}
     \item Sử dụng ma trận nghịch đảo $M^{-1}$ để biến đổi 4 góc của mỗi ô về hệ tọa độ gốc
     \item Vẽ đa giác (polylines) màu đỏ/xanh tương ứng
 \end{itemize}
+\begin{lstlisting}{language=Python}
+    def transform_points_quad(x1, y1, x2, y2, M_inv):
+    pts_rot = np.array([[
+        [x1, y1],
+        [x2, y1],
+        [x2, y2],
+        [x1, y2]
+    ]], dtype=np.float32)  # (1,4,2)
+
+    pts_orig = cv2.transform(pts_rot, M_inv)
+    pts_orig = np.round(pts_orig).astype(np.int32)
+    return pts_orig[0]  # (4,2)
+
+
+def draw_on_original(orig_img, occupied, empty, M_inv):
+    out = orig_img.copy()
+
+    for (x1, y1, x2, y2, _) in empty:
+        quad = transform_points_quad(x1, y1, x2, y2, M_inv)
+        cv2.polylines(out, [quad.reshape((-1, 1, 2))],
+                      isClosed=True, color=(0, 255, 0), thickness=2)
+
+    for (x1, y1, x2, y2, _) in occupied:
+        quad = transform_points_quad(x1, y1, x2, y2, M_inv)
+        cv2.polylines(out, [quad.reshape((-1, 1, 2))],
+                      isClosed=True, color=(0, 0, 255), thickness=2)
+
+    return out
+\end{lstlisting}
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{pictures/chapter3/s3_p05.png}
