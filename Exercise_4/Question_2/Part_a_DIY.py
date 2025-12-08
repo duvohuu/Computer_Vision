@@ -53,7 +53,7 @@ def main():
     
     print("\n=== PCA with 1 eigenvector (binary result) ===")
     print(binary_1)
-    print(eigvals_1)
+    print(reconstructed_1)
     
     # CASE 2: 3 eigenvectors
     reconstructed_3, eigvals_3 = PCA(image, num_components=3)
@@ -61,7 +61,7 @@ def main():
 
     print("\n=== PCA with 3 eigenvectors (binary result) ===")
     print(binary_3)
-    print(eigvals_3)   
+    print(reconstructed_3)
      
 if __name__ == "__main__":
     main()

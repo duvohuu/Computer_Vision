@@ -2,6 +2,17 @@
    \subsection{Part a}
         \hspace*{0.6cm}\textbf{Reconstruct lại hình sử dụng 1 và 3 eigen value lớn nhất bằng tay và lập trình Reconstruct lại hình sử
 dụng 1 và 3 eigen value lớn nhất sử dụng hàm opencv }
+        \begin{align*}
+            X = \begin{bmatrix}
+            0 & 0 & 0 & 255 & 0 & 0 & 0 \\
+            0 & 255 & 0 & 255 & 0 & 0 & 0 \\
+            0 & 255 & 255 & 255 & 255 & 0 & 0 \\
+            0 & 0 & 255 & 255 & 255 & 255 & 0 \\
+            0 & 255 & 255 & 255 & 255 & 0 & 0 \\
+            0 & 255 & 0 & 255 & 0 & 0 & 0 \\
+            0 & 0 & 0 & 255 & 0 & 0 & 0
+            \end{bmatrix}
+        \end{align*}
         \subsubsection{Tính tay}
             \begin{itemize}
                 \item Buớc 1: Tính kỳ vọng của dữ liệu theo hàng:
@@ -17,22 +28,6 @@ dụng 1 và 3 eigen value lớn nhất sử dụng hàm opencv }
                 \item Buớc 2: Trừ mỗi điểm của dữ liệu với vector kỳ vọng, ta đuợc ma trận A:
                     \begin{align*}
                         A = \begin{bmatrix}
-                        -31.875 & -31.875 & -31.875 & 223.125 & -31.875 & -31.875 & -31.875 & -31.875 \\
-                        -63.75 & 191.25 & -63.75 & 191.25 & -63.75 & -63.75 & -63.75 & -63.75 \\
-                        -63.75 & -63.75 & 191.25 & 191.25 & -63.75 & -63.75 & -63.75 & -63.75 \\
-                        -63.75 & -63.75 & -63.75 & 191.25 & 191.25 & -63.75 & -63.75 & -63.75 \\
-                        -31.875 & -31.875 & -31.875 & -31.875 & 223.125 & -31.875 & -31.875 & -31.875 \\
-                        -63.75 & -63.75 & -63.75 & -63.75 & 191.25 & 191.25 & -63.75 & -63.75 \\
-                        -31.875 & -31.875 & -31.875 & -31.875 & -31.875 & 223.125 & -31.875 & -31.875 \\
-                        -31.875 & -31.875 & -31.875 & -31.875 & -31.875 & -31.875 & 223.125 & -31.875
-                        \end{bmatrix}
-                    \end{align*}
-                \item Buớc 3: Tính ma trận hiệp phương sai C:
-                    \begin{align}
-                        C = \frac{1}{N-1}A^TA
-                    \end{align}
-                    \begin{align*}
-                        X_{\text{centered}} = \begin{bmatrix}
                         -36.429 & -36.429 & -36.429 & 218.571 & -36.429 & -36.429 & -36.429 \\
                         -72.857 & 182.143 & -72.857 & 182.143 & -72.857 & -72.857 & -72.857 \\
                         -145.714 & 109.286 & 109.286 & 109.286 & 109.286 & -145.714 & -145.714 \\
@@ -40,6 +35,21 @@ dụng 1 và 3 eigen value lớn nhất sử dụng hàm opencv }
                         -145.714 & 109.286 & 109.286 & 109.286 & 109.286 & -145.714 & -145.714 \\
                         -72.857 & 182.143 & -72.857 & 182.143 & -72.857 & -72.857 & -72.857 \\
                         -36.429 & -36.429 & -36.429 & 218.571 & -36.429 & -36.429 & -36.429
+                        \end{bmatrix}
+                    \end{align*}
+                \item Buớc 3: Tính ma trận hiệp phương sai C:
+                    \begin{align}
+                        C = \frac{1}{N-1}AA^T
+                    \end{align}
+                    \begin{align*}
+                        C = \begin{bmatrix}
+                        9289.284 & 7741.072 & 4644.643 & 4644.643 & 4644.643 & 7741.072 & 9289.284 \\
+                        7741.072 & 15482.142 & 9289.284 & -1548.214 & 9289.284 & 15482.142 & 7741.072 \\
+                        4644.643 & 9289.284 & 18578.570 & 7741.071 & 18578.570 & 9289.284 & 4644.643 \\
+                        4644.643 & -1548.214 & 7741.071 & 18578.570 & 7741.071 & -1548.214 & 4644.643 \\
+                        4644.643 & 9289.284 & 18578.570 & 7741.071 & 18578.570 & 9289.284 & 4644.643 \\
+                        7741.072 & 15482.142 & 9289.284 & -1548.214 & 9289.284 & 15482.142 & 7741.072 \\
+                        9289.284 & 7741.072 & 4644.643 & 4644.643 & 4644.643 & 7741.072 & 9289.284
                         \end{bmatrix}
                     \end{align*}
                 \item Buớc 4: Tính các giá trị riêng và vector riêng của ma trận hiệp phương sai C. 
@@ -275,6 +285,7 @@ X_reconstructed = cv2.PCABackProject(Z, mean, eigenvectors)
                 \item Kết quả khôi phục lại ảnh từ cả hai phương pháp (tính PCA bằng tay và sử dụng hàm OpenCV) đều cho ra các ma trận ảnh tương tự nhau, đặc biệt là khi sử dụng 3 eigenvectors lớn nhất.
                 \item Sự khác biệt nhỏ xuất phát từ cách OpenCV tổ chức dữ liệu đầu vào, cụ thể OpenCV mặc định coi mỗi hàng là một sample và mỗi cột là một thuộc tính (feature). Trong khi đó, phần tính tay ta đã coi mỗi cột là một sample và mỗi hàng là một thuộc tính.
             \end{itemize}
+    \subsection{Part b}
 
 
             
