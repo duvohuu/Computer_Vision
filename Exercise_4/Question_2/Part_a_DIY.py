@@ -26,8 +26,7 @@ def PCA(X, num_components):
     # 7. Khôi phục lại dữ liệu (reconstruction)
     X_reconstructed = (U_k @ Z) + mean_vector
 
-    return X_reconstructed, eigvals_sorted
-
+    return X_reconstructed
 
 def apply_threshold(matrix, threshold=150):
     return np.where(matrix >= threshold, 255, 0).astype(np.uint8)
@@ -48,20 +47,18 @@ def main():
     print(image)
     
     # CASE 1: 1 eigenvector
-    reconstructed_1, eigvals_1 = PCA(image, num_components=1)
+    reconstructed_1 = PCA(image, num_components=1)
     binary_1 = apply_threshold(reconstructed_1, threshold=150)
     
     print("\n=== PCA with 1 eigenvector (binary result) ===")
     print(binary_1)
-    print(reconstructed_1)
     
     # CASE 2: 3 eigenvectors
-    reconstructed_3, eigvals_3 = PCA(image, num_components=3)
+    reconstructed_3 = PCA(image, num_components=3)
     binary_3 = apply_threshold(reconstructed_3, threshold=150)
 
     print("\n=== PCA with 3 eigenvectors (binary result) ===")
     print(binary_3)
-    print(reconstructed_3)
      
 if __name__ == "__main__":
     main()
