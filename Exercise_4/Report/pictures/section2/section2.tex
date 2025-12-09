@@ -445,49 +445,31 @@ def reconstruct_with_k(k):
             \end{itemize}
         \newpage
         \subsubsection{Kết quả thu được}
-            \begin{figure}[H]
-                \centering
-                \includegraphics[width=0.6\textwidth]{pictures/section2/s2_p2_Original_Image_Grayscale.png}
-                \caption{Hình ảnh gốc dưới dạng ảnh xám}
-                \label{fig:original_image}
-            \end{figure}
             \begin{itemize}
                 \item Đồ thị cumulative explained variance:
                     \begin{figure}[H]
                         \centering
-                        \includegraphics[width=1\textwidth]{pictures/section2/s2_p3_Cumulative_Explained_Variance.png}
+                        \includegraphics[width=1\textwidth]{pictures/section2/s2_p2_Cumulative_Explained_Variance.png}
                         \caption{Đồ thị cumulative explained variance}
                         \label{fig:cumulative_explained_variance}   
                     \end{figure}
                 \item Kết quả khôi phục ảnh với số lượng eigenvectors theo ngưỡng phương sai 95\% ($k=35$):
                     \begin{figure}[H]
                         \centering
-                        \includegraphics[width=0.5\textwidth]{pictures/section2/s2_p4_Reconstructed_Image_Threshold_95.png}
+                        \includegraphics[width=0.75\textwidth]{pictures/section2/s2_p3_Reconstructed_Image_Threshold_95.png}
                         \caption{Ảnh khôi phục với $k=35$ (ngưỡng 95\%)}
                         \label{fig:reconstructed_image_threshold_95}
                     \end{figure}
                 \item Kết quả khôi phục ảnh với số lượng eigenvectors theo ngưỡng phương sai 100\% ($k=299$):
                     \begin{figure}[H]
                         \centering
-                        \includegraphics[width=0.5\textwidth]{pictures/section2/s2_p5_Reconstructed_Image_Threshold_100.png}
+                        \includegraphics[width=0.75\textwidth]{pictures/section2/s2_p4_Reconstructed_Image_Threshold_100.png}
                         \caption{Ảnh khôi phục với $k=299$ (ngưỡng 100\%)}
                         \label{fig:reconstructed_image_threshold_100}
                     \end{figure} 
-                \item Kết quả khôi phục ảnh với số lượng eigenvectors theo elbow heuristic ($k=47$):
-                    \begin{figure}[H]
-                        \centering
-                        \includegraphics[width=0.5\textwidth]{pictures/section2/s2_p6_Reconstructed_Image_Elbow_Heuristic.png}
-                        \caption{Ảnh khôi phục với $k=47$ (elbow heuristic)}
-                        \label{fig:reconstructed_image_elbow_heuristic}
-                    \end{figure}
+
             \end{itemize}
-        \subsubsection{Nhận xét}
-            \begin{itemize}
-                \item Việc sử dụng ngưỡng phương sai 95\% với $k=35$ đã giúp nén ảnh đáng kể trong khi vẫn giữ được hầu hết các đặc trưng quan trọng của ảnh gốc. Kết quả khôi phục khá tốt và gần giống với ảnh gốc.
-                \item Khi sử dụng ngưỡng phương sai 100\% với $k=299$, ảnh khôi phục gần như hoàn hảo so với ảnh gốc, tuy nhiên việc này không thực sự nén ảnh hiệu quả vì gần như giữ nguyên tất cả các thành phần chính.
-                \item Sử dụng elbow heuristic với $k=47$ cũng mang lại kết quả khá tốt, với chất lượng ảnh khôi phục tương đương với ngưỡng 95\%. Phương pháp này tự động xác định số lượng thành phần chính tối ưu dựa trên hình dạng của đồ thị cumulative explained variance.
-                \item Tổng kết lại, việc lựa chọn số lượng eigenvectors ảnh hưởng trực tiếp đến chất lượng ảnh khôi phục và khả năng nén dữ liệu. Cần cân nhắc giữa chất lượng ảnh và mức độ nén khi lựa chọn số lượng thành phần chính.    
-            \end{itemize}
+
             
             
             
