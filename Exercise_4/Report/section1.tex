@@ -1,2 +1,200 @@
 \section{Question 1}
-    --- IGNORE ---
+
+\subsection{Part b}
+Tìm 3 hình gần nhất với hình sau:
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.2\textwidth]{pictures/chapter1/s01_p01.png}
+    \caption{Template}
+    \label{fig:label}
+\end{figure}
+\subsubsection{Phương pháp thực hiện}
+
+Sử dụng thuật toán Eigenfaces - một ứng dụng của PCA cho bài toán nhận dạng và so sánh khuôn mặt. Quy trình gồm các bước sau:
+
+\textbf{Bước 1: Chuẩn bị dữ liệu}
+
+\begin{itemize}
+    \item Đọc tất cả ảnh trong folder \texttt{BTPCA2025}
+    \item Resize mỗi ảnh về kích thước chuẩn: $128 \times 128$ pixels
+    \item Chuyển sang grayscale
+    \item Flatten mỗi ảnh thành vector 1D có 16,384 phần tử
+\end{itemize}
+\begin{lstlisting}[language=Python]
+irow, icol = 128, 128
+image_extensions = ['.jpg', '.jpeg', '.png', '.bmp']
+image_files = []
+
+# Tim tat ca file anh trong folder
+for file in os.listdir(folder_path):
+    if any(file.lower().endswith(ext) for ext in image_extensions):
+        image_files.append(file)
+
+# Doc va chuyen doi anh thanh vector
+faces_list = []
+valid_files = []
+for img_file in image_files:
+    img_path = os.path.join(folder_path, img_file)
+    img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE) 
+    if img is None:
+        continue   
+    img_resized = cv2.resize(img, (icol, irow))
+    img_flat = img_resized.flatten()  # 128x128 -> 16384x1
+    faces_list.append(img_flat)
+    valid_files.append(img_file)
+
+# Tao ma tran faces: moi hang la 1 anh
+faces = np.array(faces_list, dtype=np.float64)
+\end{lstlisting}
+
+\textbf{Bước 2: Tính Mean Face}
+
+Tính ảnh trung bình từ tất cả ảnh trong database:
+\begin{equation}
+    \mathbf{m} = \frac{1}{N} \sum_{i=1}^{N} \mathbf{x}_i
+\end{equation}
+\begin{lstlisting}[language=Python]
+# Tinh mean theo axis=0 (trung binh tung pixel)
+m = np.mean(faces, axis=0)
+
+# Reshape de hien thi
+mean_face_img = m.reshape(irow, icol)
+\end{lstlisting}
+
+\textbf{Ý nghĩa:} Mean face thể hiện đặc trưng chung của tất cả khuôn mặt trong dataset.
+
+\textbf{Bước 3: Chuẩn hóa dữ liệu (Mean Centering)}
+
+Trừ mean face từ mỗi ảnh:
+\begin{equation}
+    \mathbf{A} = \mathbf{X} - \mathbf{1}\mathbf{m}^T
+\end{equation}
+\begin{lstlisting}[language=Python]
+# Tru mean face khoi tat ca anh
+faces_mean = faces - m
+\end{lstlisting}
+
+\textbf{Ý nghĩa:} Loại bỏ thông tin chung, giữ lại sự khác biệt giữa các khuôn mặt.
+
+\textbf{Bước 4: Tính Covariance Matrix và Eigenvalues}
+
+Sử dụng trick toán học để giảm kích thước:
+\begin{equation}
+    \mathbf{L} = \mathbf{A}\mathbf{A}^T \quad (N \times N)
+\end{equation}
+Thay vì tính $\mathbf{C} = \mathbf{A}^T\mathbf{A}$ (kích thước $16384 \times 16384$), ta tính $\mathbf{L}$ (kích thước $N \times N$).
+
+\begin{lstlisting}[language=Python]
+# Tinh ma tran covariance L (trick de tranh tinh ma tran lon)
+L = np.dot(faces_mean, faces_mean.T)
+
+# Tinh eigenvalues va eigenvectors cua L
+eigenvalues, V = np.linalg.eig(L)
+
+# Sap xep eigenvalues giam dan
+idx = eigenvalues.argsort()[::-1]
+eigenvalues = eigenvalues[idx]
+V = V[:, idx]
+\end{lstlisting}
+
+\textbf{Lưu ý:} Eigenvalues thể hiện độ quan trọng của mỗi thành phần. Giá trị càng lớn càng quan trọng.
+
+\textbf{Bước 5: Tính Principal Components (Eigenfaces)}
+
+\begin{equation}
+    \mathbf{PC} = \mathbf{A}^T\mathbf{V}
+\end{equation}
+Eigenvectors của $\mathbf{L}$ không phải eigenfaces thực sự. Ta cần chuyển đổi:
+
+\begin{lstlisting}[language=Python]
+# Tinh eigenfaces that su tu eigenvectors cua L
+PC = np.dot(faces_mean.T, V)
+
+# Chuan hoa eigenfaces
+for i in range(PC.shape[1]):
+    PC[:, i] = PC[:, i] / np.linalg.norm(PC[:, i])
+
+# Chon top K principal components quan trong nhat
+K = 50
+PC = PC[:, :K]
+
+# Tinh ty le variance giai thich duoc
+total_variance = np.sum(eigenvalues)
+explained_variance = np.sum(eigenvalues[:K]) / total_variance
+\end{lstlisting}
+
+\textbf{Ý nghĩa:} Mỗi cột của PC là một eigenface. Ta giữ lại 50 eigenfaces quan trọng nhất.
+
+\textbf{Bước 6: Tạo Signatures cho Database}
+
+Chiếu mỗi ảnh lên không gian eigenfaces:
+\begin{equation}
+    \mathbf{S} = \mathbf{A} \cdot \mathbf{PC}_{50}
+\end{equation}
+
+\begin{lstlisting}[language=Python]
+# Project cac anh len khong gian eigenfaces
+signatures = np.dot(faces_mean, PC)
+\end{lstlisting}
+
+\textbf{Bước 7: Xử lý Template Image}
+
+\begin{itemize}
+    \item Đọc ảnh template, resize về $128 \times 128$
+    \item Tính signature của template:
+\end{itemize}
+\begin{equation}
+    \mathbf{s}_{template} = (\mathbf{x}_{template} - \mathbf{m})^T \mathbf{PC}_{50}
+\end{equation}
+
+\begin{lstlisting}[language=Python]
+# Doc anh template
+template = cv2.imread(template_path, cv2.IMREAD_GRAYSCALE)
+recognize = cv2.resize(template, (icol, irow))
+
+# Flatten va tru mean
+rec = recognize.flatten() - m
+
+# Project len khong gian eigenfaces
+rec_weighted = np.dot(rec, PC)
+\end{lstlisting}
+
+\textbf{Bước 8: Tính Khoảng Cách Euclidean}
+
+So sánh template với từng ảnh trong database:
+\begin{equation}
+    d_i = \|\mathbf{s}_i - \mathbf{s}_{template}\|_2
+\end{equation}
+
+\begin{lstlisting}[language=Python]
+# Tinh khoang cach Euclidean
+scores = np.zeros(len(valid_files))
+for i in range(len(valid_files)):
+    scores[i] = np.linalg.norm(signatures[i, :] - rec_weighted)
+\end{lstlisting}
+
+\textbf{Bước 9: Ranking và Tìm Top N}
+
+Sắp xếp theo khoảng cách tăng dần và lấy 3 ảnh có khoảng cách nhỏ nhất:
+
+\begin{lstlisting}[language=Python]
+# Sap xep theo khoang cach tang dan
+idx = np.argsort(scores)
+
+# Lay top N anh
+top_n = 3
+top_images = []
+for i in range(min(top_n, len(idx))):
+    img_name = valid_files[idx[i]]
+    distance = scores[idx[i]]
+    top_images.append((img_name, distance))
+\end{lstlisting}
+\subsubsection{Kết quả}
+
+Chương trình tìm được 3 ảnh giống template nhất với khoảng cách Euclidean trong không gian PCA.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{pictures/chapter1/s01_p02.png}
+    \caption{Kết quả tìm 3 hình gần nhất}
+    \label{fig:label}
+\end{figure}
