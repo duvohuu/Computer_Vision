@@ -89,7 +89,7 @@ Kích thước mỗi ảnh: $6 \times 4$, do đó N = 24. Số ảnh huấn luy�
 \caption{Ma trận Template}
 \end{table}
 
-\textbf{A. Training PCA}
+\subsubsection{Training PCA}
 
 \textbf{Bước 1: Vector hóa}
 
@@ -414,7 +414,7 @@ Các vector trong cơ sở không gian mới là:
 \end{bmatrix}
 \]
 
-\textbf{B. Nhận dạng Template}
+\subsubsection{Nhận dạng Template}
 
 \textbf{Bước 1: Dữ liệu ảnh kiểm tra (template)}
 
@@ -552,7 +552,7 @@ e_{r3} &= ||\Omega_T - \Omega^3||_2 = 157.6041
 
 \textbf{Nhận xét:} $e_{r2}$ nhỏ nhất (3.0249), do đó Template gần H2 nhất trong không gian PCA.
 
-\textbf{C. Kiểm chứng khi chỉ dùng eigenvalue lớn nhất (k=1)}
+\subsubsection{Kiểm chứng khi chỉ dùng eigenvalue lớn nhất (k=1)}
 
 Lấy eigenvalue lớn nhất và eigenvector tương ứng:
 
@@ -581,7 +581,7 @@ e_{r3} &= ||\omega_T - \omega^3||_2 = ||-33.9464 - 107.8405||_2 = 141.7869
 
 Nhỏ nhất là $e_{r2} = ||\omega_T - \omega^2||_2$, nên kết luận vẫn là Template gần H2 nhất.
 
-\textbf{D. Kiểm chứng qua code}
+\subsubsection{Kiểm chứng qua code}
 
 \textbf{1. Chương trình Python sử dụng OpenCV:}
 
