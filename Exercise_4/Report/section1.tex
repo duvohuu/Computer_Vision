@@ -1,0 +1,822 @@
+\section{Question 1}
+\subsection{Part a}
+
+\textbf{Dữ liệu đầu vào}
+
+Kích thước mỗi ảnh: $6 \times 4$, do đó N = 24. Số ảnh huấn luyện: M = 3.
+
+\textbf{Ma trận H1:}
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+5 & 5 & 1 & 3 \\
+\hline
+5 & 10 & 2 & 4 \\
+\hline
+6 & 8 & 15 & 5 \\
+\hline
+7 & 10 & 35 & 20 \\
+\hline
+8 & 30 & 5 & 10 \\
+\hline
+25 & 33 & 44 & 55 \\
+\hline
+\end{tabular}
+\caption{Ma trận H1}
+\end{table}
+
+\textbf{Ma trận H2:}
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+5 & 10 & 8 & 23 \\
+\hline
+6 & 10 & 9 & 56 \\
+\hline
+7 & 34 & 15 & 76 \\
+\hline
+8 & 56 & 35 & 20 \\
+\hline
+9 & 30 & 23 & 23 \\
+\hline
+25 & 33 & 44 & 55 \\
+\hline
+\end{tabular}
+\caption{Ma trận H2}
+\end{table}
+
+\textbf{Ma trận H3:}
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+5 & 34 & 11 & 78 \\
+\hline
+8 & 10 & 15 & 98 \\
+\hline
+9 & 34 & 15 & 23 \\
+\hline
+10 & 13 & 35 & 20 \\
+\hline
+11 & 30 & 89 & 78 \\
+\hline
+25 & 99 & 11 & 21 \\
+\hline
+\end{tabular}
+\caption{Ma trận H3}
+\end{table}
+
+\textbf{Ma trận Template:}
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+5 & 9 & 7 & 20 \\
+\hline
+5 & 10 & 7 & 55 \\
+\hline
+7 & 33 & 15 & 76 \\
+\hline
+8 & 56 & 35 & 20 \\
+\hline
+8 & 30 & 22 & 23 \\
+\hline
+25 & 31 & 43 & 54 \\
+\hline
+\end{tabular}
+\caption{Ma trận Template}
+\end{table}
+
+\textbf{A. Training PCA}
+
+\textbf{Bước 1: Vector hóa}
+
+Chuyển các ma trận H1, H2, H3 thành các vector cột bằng cách flatten (đọc theo thứ tự từng cột):
+
+\[
+r_1 = \begin{bmatrix}
+5 \\ 5 \\ 6 \\ 7 \\ 8 \\ 25 \\ 5 \\ 10 \\ 8 \\ 10 \\ 30 \\ 33 \\ 1 \\ 2 \\ 15 \\ 35 \\ 5 \\ 44 \\ 3 \\ 4 \\ 5 \\ 20 \\ 10 \\ 55
+\end{bmatrix}, \quad
+r_2 = \begin{bmatrix}
+5 \\ 6 \\ 7 \\ 8 \\ 9 \\ 25 \\ 10 \\ 10 \\ 34 \\ 56 \\ 30 \\ 33 \\ 8 \\ 9 \\ 15 \\ 35 \\ 23 \\ 44 \\ 23 \\ 56 \\ 76 \\ 20 \\ 23 \\ 55
+\end{bmatrix}, \quad
+r_3 = \begin{bmatrix}
+5 \\ 8 \\ 9 \\ 10 \\ 11 \\ 25 \\ 34 \\ 10 \\ 34 \\ 13 \\ 30 \\ 99 \\ 11 \\ 15 \\ 15 \\ 35 \\ 89 \\ 11 \\ 78 \\ 98 \\ 23 \\ 20 \\ 78 \\ 21
+\end{bmatrix}
+\]
+
+\textbf{Bước 2. Tính vector trung bình}
+
+Ma trận $\Psi = (H1 + H2 + H3)/3$:
+\[
+\Psi = \frac{1}{3}(r_1 + r_2 + r_3) = \begin{bmatrix}
+5 \\
+6.3333 \\
+7.3333 \\
+8.3333 \\
+9.3333 \\
+25 \\
+16.3333 \\
+10 \\
+25.3333 \\
+26.3333 \\
+30 \\
+55 \\
+6.6667 \\
+8.6667 \\
+15 \\
+35 \\
+39 \\
+33 \\
+34.6667 \\
+52.6667 \\
+34.6667 \\
+20 \\
+37 \\
+43.6667
+\end{bmatrix}
+\]
+
+\textbf{Bước 3: Tính sai số của ảnh}
+
+$\Phi_i = r_i - \Psi$
+
+\[
+\Phi_1 = \begin{bmatrix}
+0 \\
+-1.3333 \\
+-1.3333 \\
+-1.3333 \\
+-1.3333 \\
+0 \\
+-11.3333 \\
+0 \\
+-17.3333 \\
+-16.3333 \\
+0 \\
+-22 \\
+-5.6667 \\
+-6.6667 \\
+0 \\
+0 \\
+-34 \\
+11 \\
+-31.6667 \\
+-48.6667 \\
+-29.6667 \\
+0 \\
+-27 \\
+11.3333
+\end{bmatrix}, \quad
+\Phi_2 = \begin{bmatrix}
+0 \\
+-0.3333 \\
+-0.3333 \\
+-0.3333 \\
+-0.3333 \\
+0 \\
+-6.3333 \\
+0 \\
+8.6667 \\
+29.6667 \\
+0 \\
+-22 \\
+1.3333 \\
+0.3333 \\
+0 \\
+0 \\
+-16 \\
+11 \\
+-11.6667 \\
+3.3333 \\
+41.3333 \\
+0 \\
+-14 \\
+11.3333
+\end{bmatrix}, \quad
+\Phi_3 = \begin{bmatrix}
+0 \\
+1.6667 \\
+1.6667 \\
+1.6667 \\
+1.6667 \\
+0 \\
+17.6667 \\
+0 \\
+8.6667 \\
+-13.3333 \\
+0 \\
+44 \\
+4.3333 \\
+6.3333 \\
+0 \\
+0 \\
+50 \\
+-22 \\
+43.3333 \\
+45.3333 \\
+-11.6667 \\
+0 \\
+41 \\
+-22.6667
+\end{bmatrix}
+\]
+
+\textbf{Bước 4: Ma trận hiệp phương sai}
+
+$C = A^T.A$
+
+Với $A = [\Phi_1 \quad \Phi_2 \quad \Phi_3]$
+
+\[
+A = \begin{bmatrix}
+0 & 0 & 0 \\
+-1.3333 & -0.3333 & 1.6667 \\
+-1.3333 & -0.3333 & 1.6667 \\
+-1.3333 & -0.3333 & 1.6667 \\
+-1.3333 & -0.3333 & 1.6667 \\
+0 & 0 & 0 \\
+-11.3333 & -6.3333 & 17.6667 \\
+0 & 0 & 0 \\
+-17.3333 & 8.6667 & 8.6667 \\
+-16.3333 & 29.6667 & -13.3333 \\
+0 & 0 & 0 \\
+-22 & -22 & 44 \\
+-5.6667 & 1.3333 & 4.3333 \\
+-6.6667 & 0.3333 & 6.3333 \\
+0 & 0 & 0 \\
+0 & 0 & 0 \\
+-34 & -16 & 50 \\
+11 & 11 & -22 \\
+-31.6667 & -11.6667 & 43.3333 \\
+-48.6667 & 3.3333 & 45.3333 \\
+-29.6667 & 41.3333 & -11.6667 \\
+0 & 0 & 0 \\
+-27 & -14 & 41 \\
+11.3333 & 11.3333 & -22.6667
+\end{bmatrix}
+\]
+
+\[
+C = \begin{bmatrix}
+7649.1131 & 65.4465 & -7714.5535 \\
+65.4439 & 4038.7773 & -4104.2227 \\
+-7714.5571 & -4104.2237 & 11818.7763
+\end{bmatrix}
+\]
+
+\textbf{Bước 5: Tính các trị riêng và vecto riêng}
+
+Khi đó vecto riêng $v_i$ và trị riêng $\lambda_i$ bỏ trị riêng bằng 0
+
+Ba trị riêng: $\lambda_1 = 18496.8127$, $\lambda_2 = 5009.8540$, $\lambda_3 \approx 8.24e - 13 = 0$.
+
+Với $\lambda_1 = 18496.8127$ ứng với vecto riêng:
+\[
+v_1 = \begin{bmatrix}
+-0.5653 \\
+-0.2276 \\
+0.7929
+\end{bmatrix}
+\]
+
+Với $\lambda_2 = 5009.8540$ ứng với vecto riêng:
+\[
+v_2 = \begin{bmatrix}
+-0.5892 \\
+0.7841 \\
+-0.1949
+\end{bmatrix}
+\]
+
+\textbf{Bước 6: Tìm vecto đặc trưng PCA}
+
+Tính $u_1 = A.v_1$, $u_2 = A.v_2$ và chuẩn hóa thành $\hat{u}_1$, $\hat{u}_2$. Dưới đây là hai vector cơ sở PCA được trình bày lại theo dạng ma trận $6 \times 4$.
+
+\[
+u_1 = \begin{bmatrix}
+0 \\
+2.1511 \\
+2.1511 \\
+2.1511 \\
+2.1511 \\
+0 \\
+21.8561 \\
+0 \\
+14.6978 \\
+-8.0909 \\
+0 \\
+52.3314 \\
+6.3358 \\
+8.7145 \\
+0 \\
+0 \\
+62.5068 \\
+-26.1657 \\
+54.9155 \\
+62.6974 \\
+-1.8874 \\
+0 \\
+50.9584 \\
+-26.9586
+\end{bmatrix}, \quad
+u_2 = \begin{bmatrix}
+0 \\
+0.1994 \\
+0.1994 \\
+0.1994 \\
+0.1994 \\
+0 \\
+-1.7321 \\
+0 \\
+15.3192 \\
+35.4849 \\
+0 \\
+-12.8648 \\
+3.5396 \\
+2.9549 \\
+0 \\
+0 \\
+-2.2592 \\
+6.4324 \\
+1.0633 \\
+22.4517 \\
+52.1641 \\
+0 \\
+-3.0611 \\
+6.6273
+\end{bmatrix}
+\]
+
+\textbf{Bước 7: Biểu diễn các vector trong không gian đặc trưng}
+
+Chuyển các vector đặc trưng $u_i$ về vector đơn vị $||\hat{u}_i|| = 1$
+\[
+\hat{u}_i = \frac{u_i}{||u_i||}
+\]
+
+Các vector trong cơ sở không gian mới là:
+
+\[
+\overline{u_1} = \begin{bmatrix}
+0 \\
+0.0158 \\
+0.0158 \\
+0.0158 \\
+0.0158 \\
+0 \\
+0.1607 \\
+0 \\
+0.1081 \\
+-0.0595 \\
+0 \\
+0.3848 \\
+0.0466 \\
+0.0641 \\
+0 \\
+0 \\
+0.4596 \\
+-0.1924 \\
+0.4038 \\
+0.461 \\
+-0.0139 \\
+0 \\
+0.3747 \\
+-0.1982
+\end{bmatrix}, \quad
+\overline{u_2} = \begin{bmatrix}
+0 \\
+0.0028 \\
+0.0028 \\
+0.0028 \\
+0.0028 \\
+0 \\
+-0.0245 \\
+0 \\
+0.2164 \\
+0.5013 \\
+0 \\
+-0.1818 \\
+0.05 \\
+0.0417 \\
+0 \\
+0 \\
+-0.0319 \\
+0.0909 \\
+0.015 \\
+0.3172 \\
+0.737 \\
+0 \\
+-0.0432 \\
+0.0936
+\end{bmatrix}
+\]
+
+\textbf{B. Nhận dạng Template}
+
+\textbf{Bước 1: Dữ liệu ảnh kiểm tra (template)}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+\multicolumn{4}{|c|}{Template} \\
+\hline
+5 & 9 & 7 & 20 \\
+\hline
+5 & 10 & 7 & 55 \\
+\hline
+7 & 33 & 15 & 76 \\
+\hline
+8 & 56 & 35 & 20 \\
+\hline
+8 & 30 & 22 & 23 \\
+\hline
+25 & 31 & 43 & 54 \\
+\hline
+\end{tabular}
+\end{table}
+
+Chuyển thành vecto 1 chiều:
+\[
+T = \begin{bmatrix}
+5 \\
+5 \\
+7 \\
+8 \\
+8 \\
+25 \\
+9 \\
+10 \\
+33 \\
+56 \\
+30 \\
+31 \\
+7 \\
+7 \\
+15 \\
+35 \\
+22 \\
+43 \\
+20 \\
+55 \\
+76 \\
+20 \\
+23 \\
+54
+\end{bmatrix}
+\]
+
+\textbf{Bước 2: Chuẩn hóa tính sai số $\Phi_T = T - \Psi$}
+
+\[
+\Phi_T = \begin{bmatrix}
+0 \\
+-1.3333 \\
+-0.3333 \\
+-0.3333 \\
+-1.3333 \\
+0 \\
+-7.3333 \\
+0 \\
+7.6667 \\
+29.6667 \\
+0 \\
+-24 \\
+0.3333 \\
+-1.6667 \\
+0 \\
+0 \\
+-17 \\
+10 \\
+-14.6667 \\
+2.3333 \\
+41.3333 \\
+0 \\
+-14 \\
+10.3333
+\end{bmatrix}
+\]
+
+\textbf{Bước 3: Biểu diễn ảnh trong không gian vecto trị riêng $\Omega_i$:}
+
+\[
+\Omega_i = \begin{bmatrix}
+\hat{u}_1^T . \phi_i \\
+\hat{u}_2^T . \phi_i
+\end{bmatrix}
+\]
+
+Vector đặc trưng:
+
+\[
+\Omega_T = \begin{bmatrix}
+\hat{u}_1^T . \phi_T \\
+\hat{u}_2^T . \phi_T
+\end{bmatrix} = \begin{bmatrix}
+-33.9464 \\
+55.0178
+\end{bmatrix}
+\]
+
+\[
+\Omega_1 = \begin{bmatrix}
+-76.8804 \\
+-41.7026
+\end{bmatrix}
+\]
+
+\[
+\Omega_2 = \begin{bmatrix}
+-30.9602 \\
+55.4998
+\end{bmatrix}
+\]
+
+\[
+\Omega_3 = \begin{bmatrix}
+107.8405 \\
+-13.7974
+\end{bmatrix}
+\]
+
+\textbf{Bước 4: Tính khoảng cách trong không gian cơ sở}
+
+\begin{align*}
+e_{r1} &= ||\Omega_T - \Omega^1||_2 = 105.8213 \\
+e_{r2} &= ||\Omega_T - \Omega^2||_2 = 3.0249 \\
+e_{r3} &= ||\Omega_T - \Omega^3||_2 = 157.6041
+\end{align*}
+
+\textbf{Nhận xét:} $e_{r2}$ nhỏ nhất (3.0249), do đó Template gần H2 nhất trong không gian PCA.
+
+\textbf{C. Kiểm chứng khi chỉ dùng eigenvalue lớn nhất (k=1)}
+
+Lấy eigenvalue lớn nhất và eigenvector tương ứng:
+
+Với $\lambda_1 = 18496.8127$ ứng với vecto riêng $v_1 = \begin{bmatrix}
+-0.5653 \\
+-0.2276 \\
+0.7929
+\end{bmatrix}$
+
+Biểu diễn ảnh trong không gian vecto trị riêng:
+
+\begin{align*}
+\omega_T &= -33.9464 \\
+\omega_1 &= 76.8804 \\
+\omega_2 &= -30.9602 \\
+\omega_3 &= 107.8405
+\end{align*}
+
+\textbf{Khoảng cách Euclid}
+
+\begin{align*}
+e_{r1} &= ||\omega_T - \omega^1||_2 = ||-33.9464 + 76.8804||_2 = 42.934 \\
+e_{r2} &= ||\omega_T - \omega^2||_2 = ||-33.9464 + 30.9602||_2 = 2.9862 \\
+e_{r3} &= ||\omega_T - \omega^3||_2 = ||-33.9464 - 107.8405||_2 = 141.7869
+\end{align*}
+
+Nhỏ nhất là $e_{r2} = ||\omega_T - \omega^2||_2$, nên kết luận vẫn là Template gần H2 nhất.
+
+\textbf{D. Kiểm chứng qua code}
+
+\textbf{1. Chương trình Python sử dụng OpenCV:}
+
+\begin{itemize}
+    \item Huấn luyện PCA: \texttt{cv2.PCACompute2(X, mean=None, maxComponents=k)}
+    
+    $\rightarrow$ mean, eigenvectors, eigenvalues.
+    
+    \item Chiếu dữ liệu bằng \texttt{cv2.PCAProject} để lấy tọa độ đặc trưng trong không gian PCA.
+\end{itemize}
+
+\textbf{Lưu ý về eigenvalue:} Trong phần tính tay, dùng ma trận rút gọn $C = A^T.A$ (không chia M). OpenCV trả eigenvalue trong ứng với dạng đã chuẩn hoá theo số mẫu, nên eigenvalue từ code bằng xấp xỉ (1/M) lần eigenvalue tính tay.
+
+\textbf{Tính khoảng cách và quyết định mẫu gần nhất}
+
+\begin{itemize}
+    \item Khoảng cách Euclid trong không gian PCA: $d_i = ||\Omega_i - \Omega_{test}||_2$.
+    \item Trong code: \texttt{dists = np.linalg.norm(proj\_train - proj\_test, axis=1)}.
+\end{itemize}
+
+\textbf{2. Kết quả chạy}
+
+Ảnh chụp kết quả chạy chương trình:
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{pictures/chapter1/s01_p01_result.png}
+    \caption{Kết quả chạy chương trình}
+    \label{s01_p01_result}
+\end{figure}
+\begin{itemize}
+    \item \textbf{Nhận dạng:} tính tay và code đều chọn H2 là mẫu gần nhất.
+    
+    \item \textbf{Sai khác eigenvalue:} OpenCV trả $eigenvalue \approx [6165.6045, 1669.9512]$, trong khi tính tay cho $C = A^T A$ cho $\lambda \approx [18496.8127, 5009.8540]$. Hai bộ eigenvalue khác nhau đúng hệ số 1/3 (do OpenCV chuẩn hoá theo 1/M với M=3). Vector riêng và toạ độ chiếu (projection) vẫn tương thích, do đó khoảng cách và kết luận không đổi.
+    
+    $18496.8127 / 3 \approx 6165.6042$; $5009.8540 / 3 \approx 1669.9513$ (khớp kết quả).
+    
+    \item Với k=2, khoảng cách tới H2 rất nhỏ so với H1 và H3 $\rightarrow$ Template có độ tương đồng cao với H2. Với k=1 vẫn nhận đúng nhưng chỉ là biểu diễn 1 chiều nên độ phân tách có thể giảm nếu dữ liệu phức tạp hơn.
+\end{itemize}
+\cleardoublepage
+
+\subsection{Part b}
+Tìm 3 hình gần nhất với hình sau:
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.2\textwidth]{pictures/section1/s01_p01.png}
+    \caption{Template}
+    \label{s01_p01}
+\end{figure}
+\subsubsection{Phương pháp thực hiện}
+
+Sử dụng thuật toán Eigenfaces - một ứng dụng của PCA cho bài toán nhận dạng và so sánh khuôn mặt. Quy trình gồm các bước sau:
+
+\textbf{Bước 1: Chuẩn bị dữ liệu}
+
+\begin{itemize}
+    \item Đọc tất cả ảnh trong folder \texttt{BTPCA2025}
+    \item Resize mỗi ảnh về kích thước chuẩn: $128 \times 128$ pixels
+    \item Chuyển sang grayscale
+    \item Flatten mỗi ảnh thành vector 1D có 16,384 phần tử
+\end{itemize}
+\begin{lstlisting}[language=Python]
+irow, icol = 128, 128
+image_extensions = ['.jpg', '.jpeg', '.png', '.bmp']
+image_files = []
+
+# Tim tat ca file anh trong folder
+for file in os.listdir(folder_path):
+    if any(file.lower().endswith(ext) for ext in image_extensions):
+        image_files.append(file)
+
+# Doc va chuyen doi anh thanh vector
+faces_list = []
+valid_files = []
+for img_file in image_files:
+    img_path = os.path.join(folder_path, img_file)
+    img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE) 
+    if img is None:
+        continue   
+    img_resized = cv2.resize(img, (icol, irow))
+    img_flat = img_resized.flatten()  # 128x128 -> 16384x1
+    faces_list.append(img_flat)
+    valid_files.append(img_file)
+
+# Tao ma tran faces: moi hang la 1 anh
+faces = np.array(faces_list, dtype=np.float64)
+\end{lstlisting}
+
+\textbf{Bước 2: Tính Mean Face}
+
+Tính ảnh trung bình từ tất cả ảnh trong database:
+\begin{equation}
+    \mathbf{m} = \frac{1}{N} \sum_{i=1}^{N} \mathbf{x}_i
+\end{equation}
+\begin{lstlisting}[language=Python]
+# Tinh mean theo axis=0 (trung binh tung pixel)
+m = np.mean(faces, axis=0)
+
+# Reshape de hien thi
+mean_face_img = m.reshape(irow, icol)
+\end{lstlisting}
+
+\textbf{Ý nghĩa:} Mean face thể hiện đặc trưng chung của tất cả khuôn mặt trong dataset.
+
+\textbf{Bước 3: Chuẩn hóa dữ liệu (Mean Centering)}
+
+Trừ mean face từ mỗi ảnh:
+\begin{equation}
+    \mathbf{A} = \mathbf{X} - \mathbf{1}\mathbf{m}^T
+\end{equation}
+\begin{lstlisting}[language=Python]
+# Tru mean face khoi tat ca anh
+faces_mean = faces - m
+\end{lstlisting}
+
+\textbf{Ý nghĩa:} Loại bỏ thông tin chung, giữ lại sự khác biệt giữa các khuôn mặt.
+
+\textbf{Bước 4: Tính Covariance Matrix và Eigenvalues}
+
+Sử dụng trick toán học để giảm kích thước:
+\begin{equation}
+    \mathbf{L} = \mathbf{A}\mathbf{A}^T \quad (N \times N)
+\end{equation}
+Thay vì tính $\mathbf{C} = \mathbf{A}^T\mathbf{A}$ (kích thước $16384 \times 16384$), ta tính $\mathbf{L}$ (kích thước $N \times N$).
+
+\begin{lstlisting}[language=Python]
+# Tinh ma tran covariance L (trick de tranh tinh ma tran lon)
+L = np.dot(faces_mean, faces_mean.T)
+
+# Tinh eigenvalues va eigenvectors cua L
+eigenvalues, V = np.linalg.eig(L)
+
+# Sap xep eigenvalues giam dan
+idx = eigenvalues.argsort()[::-1]
+eigenvalues = eigenvalues[idx]
+V = V[:, idx]
+\end{lstlisting}
+
+\textbf{Lưu ý:} Eigenvalues thể hiện độ quan trọng của mỗi thành phần. Giá trị càng lớn càng quan trọng.
+
+\textbf{Bước 5: Tính Principal Components (Eigenfaces)}
+
+\begin{equation}
+    \mathbf{PC} = \mathbf{A}^T\mathbf{V}
+\end{equation}
+Eigenvectors của $\mathbf{L}$ không phải eigenfaces thực sự. Ta cần chuyển đổi:
+
+\begin{lstlisting}[language=Python]
+# Tinh eigenfaces that su tu eigenvectors cua L
+PC = np.dot(faces_mean.T, V)
+
+# Chuan hoa eigenfaces
+for i in range(PC.shape[1]):
+    PC[:, i] = PC[:, i] / np.linalg.norm(PC[:, i])
+
+# Chon top K principal components quan trong nhat
+K = 50
+PC = PC[:, :K]
+
+# Tinh ty le variance giai thich duoc
+total_variance = np.sum(eigenvalues)
+explained_variance = np.sum(eigenvalues[:K]) / total_variance
+\end{lstlisting}
+
+\textbf{Ý nghĩa:} Mỗi cột của PC là một eigenface. Ta giữ lại 50 eigenfaces quan trọng nhất.
+
+\textbf{Bước 6: Tạo Signatures cho Database}
+
+Chiếu mỗi ảnh lên không gian eigenfaces:
+\begin{equation}
+    \mathbf{S} = \mathbf{A} \cdot \mathbf{PC}_{50}
+\end{equation}
+
+\begin{lstlisting}[language=Python]
+# Project cac anh len khong gian eigenfaces
+signatures = np.dot(faces_mean, PC)
+\end{lstlisting}
+
+\textbf{Bước 7: Xử lý Template Image}
+
+\begin{itemize}
+    \item Đọc ảnh template, resize về $128 \times 128$
+    \item Tính signature của template:
+\end{itemize}
+\begin{equation}
+    \mathbf{s}_{template} = (\mathbf{x}_{template} - \mathbf{m})^T \mathbf{PC}_{50}
+\end{equation}
+
+\begin{lstlisting}[language=Python]
+# Doc anh template
+template = cv2.imread(template_path, cv2.IMREAD_GRAYSCALE)
+recognize = cv2.resize(template, (icol, irow))
+
+# Flatten va tru mean
+rec = recognize.flatten() - m
+
+# Project len khong gian eigenfaces
+rec_weighted = np.dot(rec, PC)
+\end{lstlisting}
+
+\textbf{Bước 8: Tính Khoảng Cách Euclidean}
+
+So sánh template với từng ảnh trong database:
+\begin{equation}
+    d_i = \|\mathbf{s}_i - \mathbf{s}_{template}\|_2
+\end{equation}
+
+\begin{lstlisting}[language=Python]
+# Tinh khoang cach Euclidean
+scores = np.zeros(len(valid_files))
+for i in range(len(valid_files)):
+    scores[i] = np.linalg.norm(signatures[i, :] - rec_weighted)
+\end{lstlisting}
+
+\textbf{Bước 9: Ranking và Tìm Top N}
+
+Sắp xếp theo khoảng cách tăng dần và lấy 3 ảnh có khoảng cách nhỏ nhất:
+
+\begin{lstlisting}[language=Python]
+# Sap xep theo khoang cach tang dan
+idx = np.argsort(scores)
+
+# Lay top N anh
+top_n = 3
+top_images = []
+for i in range(min(top_n, len(idx))):
+    img_name = valid_files[idx[i]]
+    distance = scores[idx[i]]
+    top_images.append((img_name, distance))
+\end{lstlisting}
+\subsubsection{Kết quả}
+
+Chương trình tìm được 3 ảnh giống template nhất với khoảng cách Euclidean trong không gian PCA.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{pictures/section1/s01_p02.png}
+    \caption{Kết quả tìm 3 hình gần nhất}
+    \label{s01_p02}
+\end{figure}

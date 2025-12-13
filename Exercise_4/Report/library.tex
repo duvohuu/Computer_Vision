@@ -1,0 +1,94 @@
+\usepackage{vntex} % Tiếng Việt
+\usepackage{graphicx} % Chèn hình ảnh
+\usepackage{fancyhdr} % Gói hỗ trợ tạo header và footer fancy
+\usepackage{changepage} % Thay đổi lề
+
+% Chèn code
+\usepackage{listings} % Thêm gói listings để chèn code
+\usepackage{xcolor} % Màu cho code
+\lstset{
+    language=Python,
+    basicstyle=\small\ttfamily,
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    stepnumber=1,
+    numbersep=8pt,
+    tabsize=4,
+    breaklines=true,
+    breakatwhitespace=false,
+    xleftmargin=1.5em,
+    framexleftmargin=1.5em,
+    keywordstyle=\color{blue}\bfseries,
+    commentstyle=\color{green!60!black}\itshape,
+    stringstyle=\color{orange!80!red},
+    identifierstyle=\color{black},
+    emphstyle=\color{red},
+    frame=single,
+    rulecolor=\color{black!30},
+    backgroundcolor=\color{gray!5},
+    showstringspaces=false,
+    captionpos=b,
+    morekeywords={True, False, None, self, cv2, np, plt},
+    emph={range, len, print, open, str, int, float, list, dict, enumerate, zip},
+    emphstyle=\color{purple!80!blue},
+}
+
+% Footnote and References
+\usepackage[style=numeric,backend=biber]{biblatex} % Sử dụng gói biblatex
+\usepackage{capt-of} %  Footnote trong caption
+\usepackage[perpage]{footmisc} % Đánh số lại chú thích mỗi trang
+
+% Thiết lập bảng
+\usepackage{array} % Gói hỗ trợ các bảng phức tạp
+\usepackage{tabularx}
+\usepackage{longtable} % Tạo bảng qua nhiều trang
+\usepackage{cellspace}
+\usepackage{diagbox} % Gói hỗ trợ tạo các ô chéo trong bảng
+\usepackage{multirow}
+\usepackage{makecell}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage[export]{adjustbox}
+
+% Thiết lập công thức toán học
+\usepackage{amsmath} % Gói hỗ trợ các công thức toán học
+\usepackage{amsfonts} % Gói hỗ trợ các ký hiệu toán học
+\usepackage{amssymb} % Gói hỗ trợ các ký hiệu toán học
+\usepackage{graphicx} % Gói hỗ trợ chèn hình ảnh
+\usepackage{bm} % Chữ in đậm trong công thức toán 
+
+% Đồ thị 
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+% Thiết lập thêm tùy chọn cho dấu gạch đầu dòng
+\usepackage{enumitem}
+
+% Thiết lập khác
+\usepackage{tikz}
+\usepackage{color}
+\usepackage{subcaption}
+\usepackage{framed}
+\usepackage{float} % Để chèn hình ảnh vào đúng vị trí
+\usepackage{fancyvrb} % Đưa dữ liệu dạng nguyên thủy vào
+
+% Thiết lập kích thước
+\usepackage{geometry}
+\geometry{
+    left=3cm,
+    right=2cm,
+    top=2.5cm,
+    bottom=2.5cm,
+}
+\usepackage{hyperref} %Chèn link
+\hypersetup{urlcolor=black,linkcolor=black,citecolor=black,colorlinks=true} % Màu cho các đường nét
+\everymath{\color{black}}
+\pagestyle{fancy}
+
+% Đánh số theo section
+\numberwithin{equation}{section}  % Công thức: (1.1), (1.2), (2.1)...
+\numberwithin{figure}{section}    % Hình: Figure 1.1, Figure 1.2...
+\numberwithin{table}{section}     % Bảng: Table 1.1, Table 1.2...
+\AtBeginDocument{%
+    \counterwithin{lstlisting}{section}
+}
